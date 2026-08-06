@@ -675,7 +675,6 @@ function renderNeedleOptions(options) {
             <span class="thread-dot" style="background:${escapeHtml(hex)}" title="Approx thread colour"></span>
             <div class="dhaga-thread">${escapeHtml(opt.thread)}</div>
           </div>
-          <p class="thread-approx-note">Colour dot is approximate</p>
         </button>`;
     })
     .join("");

@@ -401,10 +401,11 @@ body {
   box-shadow: 0 0 0 1px rgba(0,0,0,0.18), 0 4px 10px rgba(0,0,0,0.12);
 }
 .thread-approx-note {
-  margin: 0.35rem 0 0;
-  font-size: 0.72rem;
+  margin: 0.75rem 0 0;
+  font-size: 0.78rem;
   color: var(--muted);
   font-weight: 600;
+  text-align: center;
 }
 .dhaga-thread {
   font-family: var(--display); font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em;
