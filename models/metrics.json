@@ -1,0 +1,16 @@
+{
+  "metrics": {
+    "pair_rank_acc": 0.9972850678733032,
+    "retrieval_top1": 0.2595307917888563,
+    "retrieval_top10": 0.3101173020527859,
+    "n_eval_queries": 1364.0,
+    "n2_acc": 0.0944700460829493,
+    "n3_acc": 0.14903846153846154,
+    "n4_acc": 0.37349397590361444,
+    "n5_acc": 0.26666666666666666
+  },
+  "n_recipes": 2210,
+  "n_train_pairs": 4504,
+  "n_test_pairs": 1105,
+  "model_path": "C:\\ML model\\models\\colour_recommender.joblib"
+}

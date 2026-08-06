@@ -1,0 +1,156 @@
+{
+  "queries": 1000,
+  "unique_cloths_in_data": 70,
+  "unique_designs_in_data": 391,
+  "note": "Data has ~70 cloth names and ~390 designs, not 1000 unique cloths. Evaluated 1000 sampled real jobs.",
+  "production_known_design_cloth": {
+    "description": "Dad enters design + cloth (normal use). Leave-one-out: useful alternative in top results.",
+    "top1_pct": 99.5,
+    "top3_pct": 99.7,
+    "top10_pct": 99.7
+  },
+  "exact_recipe_recovery_leave_one_out": {
+    "description": "Hard test: hide this job, recover the exact same needle map from other jobs only.",
+    "top1_pct": 3.4,
+    "top10_pct": 9.8
+  },
+  "app_use_including_history": {
+    "description": "App can see past jobs including this combo \u2014 how often #1 matches saved recipe.",
+    "top1_pct": 100.0
+  },
+  "cloth_and_part_only": {
+    "top1_pct": 90.3,
+    "top10_pct": 91.0
+  },
+  "cloth_only": {
+    "top1_pct": 96.4,
+    "top10_pct": 96.4
+  },
+  "expected_real_world": {
+    "when_design_and_cloth_known": "about 85-98% chance the correct/past recipe is #1 or in top 10",
+    "when_only_cloth_and_part": "about 40-70% useful top-10 (guidance, not exact)",
+    "brand_new_unseen_combo": "falls back to similar past jobs \u2014 treat as suggestions to pick from"
+  },
+  "top_cloths": [
+    {
+      "cloth": "green",
+      "n": 157,
+      "top1_pct": 98.1,
+      "top10_pct": 99.4
+    },
+    {
+      "cloth": "pink",
+      "n": 123,
+      "top1_pct": 99.2,
+      "top10_pct": 99.2
+    },
+    {
+      "cloth": "blue",
+      "n": 108,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "yellow",
+      "n": 78,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "purple",
+      "n": 72,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "firozi",
+      "n": 62,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "orange",
+      "n": 52,
+      "top1_pct": 98.1,
+      "top10_pct": 98.1
+    },
+    {
+      "cloth": "peach",
+      "n": 40,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "grey",
+      "n": 32,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "red",
+      "n": 32,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "rama",
+      "n": 27,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "black",
+      "n": 23,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "cream",
+      "n": 20,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "brown",
+      "n": 18,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "rust",
+      "n": 16,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "maroon",
+      "n": 14,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "fawn",
+      "n": 14,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "wine",
+      "n": 13,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "gold",
+      "n": 8,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    },
+    {
+      "cloth": "gajri",
+      "n": 8,
+      "top1_pct": 100.0,
+      "top10_pct": 100.0
+    }
+  ]
+}

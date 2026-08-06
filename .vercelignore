@@ -1,0 +1,22 @@
+Jeetubhai Images/
+design_book_pages/
+design_book_pages_ordered/
+data/
+_pdf_preview/
+thread book/
+Design book jeetubhai.zip
+COLOUR SELECTION MODEL.pdf
+models/colour_recommender.joblib
+models/gallery_index.joblib
+models/gallery_index.joblib.bak
+models/accuracy_report.json
+models/metrics.json
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.vercel
+scripts/
+PROCESS_FLOW.md
+*.bat

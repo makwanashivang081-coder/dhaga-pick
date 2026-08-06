@@ -1,0 +1,99 @@
+source_page,design_no,reason,raw_hint
+1,1237,firozi n1 BM code not confidently readable on phone (BM 921 / BM 211 / BM G conflict),OS-1237 firozi n1
+2,1113,"grey/yellow n3 codes vary across reads (345/34S, 774/724R)",QS-1113 grey/yellow
+2,1233,purple n3 and firozi n1 partial conflict across phone reads,QS-1233
+2,1235,pink n2 715 vs 71S across reads; used 715 Royal,QS-1235 pink n2
+3,9058,wine n1 empty/unreadable,wine row n1 blank
+3,1228,pink n1/n2/n3 partial conflict across reads (1278/111N/747 vs others),OS-1228 pink
+3,1230,n4 M Jari vs VW Jari / LM Jari conflict; used M Jari from clearer phone read,OS-1230 n4
+5,9083/9032,two design headers over one colour list; duplicated under both,OS-9083 Neck + OS-9032 KP 209
+5,9050,cloth colours not written on any row,OS-9050 KP three rows
+5,9032,cloth colours not written on KP 110 Pcs block,OS-9032 KP 110 three rows
+5,1192,cloth colours not written,OS-1192 three rows
+5,1165,"peach/mustard n1/n2 conflict across reads (91LL/914, 33S/335); used 91 LL / 33 S",OS-1165
+6,9086/9049,two design headers over one colour list; duplicated under both,OS-9086 Neck + OS-9049 KP
+7,1210,cloth not written; n2 BCH may be incomplete; n3/n4 crowded,OS-1210
+7,1177/1121,two design headers share one colour list; duplicated under both; n3 may be 118 L vs 1186,OS-1177 + OS-1121
+8,1203,n1 may be 31 Jari vs VW Jari; cloth-side notes phone/gran/cream,OS-1203
+8,1206,pink n2 44 L vs prior VUL misread; used 44 L Royal from phone,OS-1206 pink n2
+8,1161,n4 LG unclear brand/code completeness,OS-1161 n4
+9,1193,green n1/n3 1004/1041 unusual length — verify,1193 green
+9,1196,some 4-digit codes unusual; green n1 335 vs 33S across prior extract,1196
+9,1199,green n3 'M Raj' may be incomplete,1199 green n3
+10,5082,cloth colours not written,OS-5082 KP
+10,1156,rust n3 '100 UD Royal' unusual,1156 rust n3
+10,1192,green/grey n2/n3 conflict across reads,OS-1192
+11,7059,red/burgundy n1 'M Royal' may be incomplete,7059 M Royal
+11,1190,green n1 LML vs prior empty; n4 86 vs 486 conflict on sky blue,OS-1190
+12,1188,n4 BCH vs 8 C/H Jari spelling uncertain; used BCH Jari,1188 n4
+12,1189,cloth colours not written,OS-1189
+13,9075,cloth not written,OS-9075
+13,1182,cloth not written; row2 n1 M Raj may be incomplete,OS-1182
+13,1185,cloth not written; some modifiers uncertain,OS-1185
+13,1187,cloth not written,OS-1187
+14,6034,cloth not written,QS-6034
+14,7037,cloth colours not written,QS-7037
+14,1179,purple n1 1004 unusual length,QS-1179
+14,9059,green n3 'M Raj' may be incomplete,OS-9059 green n3
+14,9058,cloth not written; some n3 codes medium,OS-9058
+15,7053,violet n3 'Black' unusual as thread code; red n3 DR/Paj conflict,OS-7053
+15,1178/1177,two design headers share one colour list; duplicated under both,OS-1178 + OS-1177
+15,1175/1176,two design headers share one colour list; duplicated under both,OS-1175 + OS-1176
+15,9022,"cloth not written; design was 9027 in v1 PDF extract, phone reads 9022",OS-9022 KP
+15,9026,cloth not written; row4 n2 1050 Raj unusual,OS-9026
+17,1165,green n2 faint/unreadable on phone photo,Green (2) light ink
+17,1166,green n2 faint/unreadable on phone photo,Green (2) light ink
+22,1130,green n3 written ND Royal without number code,Green (3) ND Royal
+23,1129,yellow n3 incomplete/unreadable,Yellow (3) ?LL Royal
+24,1122,grey n3 brand ST unusual/unclear,Grey (3) 74 N ST
+26,9085,row3 n3 1041 still slightly ambiguous vs 104,Row3 (3) 1041/104 Royal
+37,9083,n3 may be 118 L Royal or 1181 Royal,1181 written cramped
+39,9096,n3/n4 LL vs 118 LL cramped,118 LL / llo
+39,9097,n6 codes only in notes; schema n1-n5,6-needle rows
+42,8017,l.pink n4 354 vs 754 uncertain,n4
+42,8018,green n1 33L vs 332 uncertain,n1
+43,9088,green n1 145 vs 245 conflict across reads,n1
+43,9089,n3 row1 713 vs 743,n3
+45,6095,white n3 75 vs 751 Royal,n3
+45,9078,n1 row1 711 Raj vs 7LL Raj,n1
+36,8016,n5 Black may be colour name not thread,n5 Black
+38,1101,n2 code 4G unusual,4G
+46,7020,n1 row1 written 7LL Raj (unusual modifier LL),row1 n1
+46,8057,n3 may be 118 L Royal vs 1181 Royal,yellow/pink/blue n3
+46,8081,row2 n3 read 768 D Royal (was 763); verify,row2 n3
+46,6094,row3 n1 unreadable (77 DD / HDD / 710 D),row3 n1 left empty
+47,7095,row4 n3 362 F Raj vs 362 R Raj,row4 n3
+48,9074,lot2 row2 n1 may be 130 Raj vs 190 Raj; row3 n3 189 vs 185,lot2
+49,9062,row2 n1 brand Raj vs Royal,row2 n1
+49,9069,row2 n1 125 U vs 125 L Royal,row2 n1
+50,9058,row1 n1 7LL Raj unusual,row1 n1
+50,9061,row3 cloth phone normalized peach,row3 cloth
+52,8018,cream n1 143 vs 113; grey n2 711 vs 7111; n5 cut on photo edge,5-needle block
+52,9042,n3 311 L Royal vs 31 LL Royal,n3 column
+54,9026,modifier F in 8 F Raj unusual,n1/n2 F
+54,9032,row1 n2 762 DD Royal (DDD overlay cleared to DD),row1 n2
+55,9023,yellow n1 789 DD Raj; HG note under code,yellow n1
+55,9022,row3 n1 188 Raj vs 188 T Raj,row3 n1
+56,9015,shared n4 row1 190 Raj (was 130); n1 row3 58 Royal,9015+9016
+57,6050,cloth phone→peach; some Ro abbreviations; peach n3 45 vs 445,6050
+57,8027,row2 cloth rust (was pink); green n1 100 Raj unusual,shared 8027+8030
+59,8021,design was 3021 in old extract; phone shows 8021; n3 118 L (not 1186); brands abbreviated Ro,was 3021
+59,5055,row2 n1 88 NC Raj; row3 n2 66 Royal,rows 2-3
+60,6074,design was 6071 in old extract; phone shows 6074,was 6071
+60,6089,cloth froji→firozi; n1 118 LL Royal,6089
+60,7013,row1 n1 8 NC Royal (NC vs NL),7013/7020 NC
+62,3029,row3 n1/n2/n3 still ambiguous on phone photo,possible 21308 / 7620F / 412 variants
+65,6039,row3 n2 ambiguous (79 D Raj vs 750 Raj),102 N Raj row
+66,8088,green n1 unusual modifier LMLL — verify,LMLL Royal
+69,5000,row1 n1 unusual code 21308 Royal — verify,21308 Royal
+71,8008,pink n1 empty circle — no thread text,Pink n1
+72,7069,"row2 n1 LML Royal — unusual modifier, verify",LML Royal
+73,5000,n1 may be 21308 vs 213 DS — phone leans 21308,row1 n1
+73,7050,yellow/l green n2 slightly ambiguous (333/325 vs 33 S),n2 column
+73,7090,orange n1 empty circle,Orange n1 blank
+73,8066,row3 n3 empty/ambiguous,n3
+73,8067,row3 n3 empty/ambiguous,n3
+74,8062,part written KK — kept as kk (may mean KP),OS-8062 KK
+75,5033,row2/3 needle circled labels odd; n2 762 DDF unusual,762 DDF Raj
+75,8057,row1 trailing note O KG / 0.KG — not stored as thread,far-right note
+75,8058,header incomplete part name — qty 20x6=120 only,OS-8058 - 20x6=120

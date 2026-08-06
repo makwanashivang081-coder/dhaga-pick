@@ -1,0 +1,38 @@
+# Secrets / env
+.env
+.venv/
+venv/
+
+# Huge local assets (not needed on Vercel — lite model + gallery hashes only)
+Jeetubhai Images/
+design_book_pages/
+design_book_pages_ordered/
+data/pdf_pages/
+data/extracts/
+data/phone_by_pdf_page/
+data/_phone_preview/
+data/_crops_16_30/
+_pdf_preview/
+thread book/
+Design book jeetubhai.zip
+COLOUR SELECTION MODEL.pdf
+models/colour_recommender.joblib
+models/gallery_index.joblib
+
+# Keep for deploy: models/lite_recipes.json, models/gallery_index.json
+# Keep CSVs under data/*.csv for local retrain (optional on Vercel)
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Vercel
+.vercel
