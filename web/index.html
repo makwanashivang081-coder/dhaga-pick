@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/styles.css?v=16" />
+  <link rel="stylesheet" href="/static/styles.css?v=17" />
 </head>
 <body>
   <div class="bg" id="page-bg"></div>
@@ -120,6 +120,13 @@
         <h2 data-i18n="pickStrip">Pick a recipe strip</h2>
         <p data-i18n="pickStripMeta">Tap recipe 1–5. Needle number = cloth colour, strip = dhaga colour.</p>
       </div>
+      <div class="recipe-mode-toggle" role="tablist">
+        <button type="button" class="mode-btn active" id="mode-recipes" data-i18n="modeRecipes">Recipes</button>
+        <button type="button" class="mode-btn" id="mode-personalised" data-i18n="modePersonalised">Personalised</button>
+      </div>
+      <div id="personalised-panel" class="personalised-panel" hidden>
+        <div id="personalised-slots"></div>
+      </div>
       <p id="design-help" class="design-help" hidden></p>
       <p id="tikli-banner" class="tikli-banner" hidden></p>
       <div id="recipe-strips" class="recipe-strips"></div>
@@ -153,6 +160,6 @@
     </div>
   </section>
 
-  <script src="/static/app.js?v=16"></script>
+  <script src="/static/app.js?v=17"></script>
 </body>
 </html>

@@ -21,6 +21,11 @@ _SPECIAL: dict[str, str] = {
     "bch": "#d4af37",
     "m": "#c0c0c0",
     "md": "#9aa0a6",
+    "lg": "#e8d48b",
+    "badla": "#d4af37",
+    "black": "#1a1a1a",
+    "white": "#f5f5f5",
+    "silver": "#c0c0c0",
 }
 
 
@@ -56,23 +61,28 @@ def _parse(thread: str) -> tuple[str, str, str]:
     if m and not re.search(r"\d", m.group(1)):
         return m.group(1), core[m.end() :].strip(), brand
 
-    m = re.match(r"^(\d+)\s*([a-z]*)", core)
-    if not m:
-        return core, "", brand
-    return m.group(1), (m.group(2) or "").lower(), brand
+    m = re.match(r"^(\d+)(.*)", core)
+    if m:
+        mods = re.sub(r"[^a-z]", "", (m.group(2) or "").lower())
+        return m.group(1), mods, brand
+
+    return core, "", brand
 
 
 def _modifier_keys(code: str, mods: str) -> list[str]:
     """Lookup keys from most specific to base, e.g. 118.LL → 118.L → 118."""
     mods = re.sub(r"[^a-z]", "", (mods or "").lower())
     keys: list[str] = []
+    if mods:
+        keys.append(f"{code}.{mods.upper()}")
+        for i in range(len(mods) - 1, 0, -1):
+            keys.append(f"{code}.{mods[:i].upper()}")
     # longest modifier tokens first
-    for token in ("ll", "dd", "nl", "nd", "st", "dr", "lr"):
+    for token in ("ll", "dd", "nl", "nd", "st", "dr", "lr", "ds", "dt"):
         if token in mods:
             keys.append(f"{code}.{token.upper()}")
-    for token in ("l", "d", "n", "s", "b", "f", "r", "t", "p", "u", "c"):
-        # whole-token or trailing letter (avoid matching L inside LL twice)
-        if re.search(rf"(^|[^a-z]){token}([^a-z]|$)", mods) or mods.endswith(token):
+    for token in ("l", "d", "n", "s", "b", "f", "r", "t", "p", "u", "c", "h"):
+        if token in mods:
             keys.append(f"{code}.{token.upper()}")
     keys.append(code)
     # dedupe preserve order
@@ -116,6 +126,26 @@ def _apply_modifiers(hex_color: str, mods: str) -> str:
     return _scale_hex(hex_color, factor)
 
 
+@lru_cache(maxsize=1)
+def _numeric_bases() -> dict[int, str]:
+    out: dict[int, str] = {}
+    for key, hx in _shade_codes().items():
+        m = re.match(r"^(\d+)$", key)
+        if m:
+            out[int(m.group(1))] = hx
+    return out
+
+
+def _nearest_numeric_hex(num: int) -> str | None:
+    bases = _numeric_bases()
+    if not bases:
+        return None
+    if num in bases:
+        return bases[num]
+    nearest = min(bases.keys(), key=lambda n: abs(n - num))
+    return bases[nearest]
+
+
 @lru_cache(maxsize=4096)
 def thread_approx_hex(thread: str) -> str | None:
     """Shade-card hex for a label like '315 Royal', or None if unknown."""
@@ -141,10 +171,14 @@ def thread_approx_hex(thread: str) -> str | None:
     for key in _modifier_keys(code, mods):
         if key in shade:
             hx = shade[key]
-            # Exact modifier hit — no further scaling.
             if "." in key:
                 return hx
             return _apply_modifiers(hx, mods)
+
+    if code.isdigit():
+        near = _nearest_numeric_hex(int(code))
+        if near:
+            return _apply_modifiers(near, mods)
 
     return None
 

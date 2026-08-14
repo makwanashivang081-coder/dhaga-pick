@@ -628,6 +628,29 @@ def _rgb_dist(a: tuple[int, int, int], b: tuple[int, int, int]) -> float:
     return sum((a[i] - b[i]) ** 2 for i in range(3)) ** 0.5
 
 
+def _rgb_to_lab(r: int, g: int, b: int) -> tuple[float, float, float]:
+    """sRGB → CIELAB (D65) for perceptual cloth matching."""
+    def lin(c: float) -> float:
+        c /= 255.0
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+
+    rl, gl, bl = lin(r), lin(g), lin(b)
+    x = rl * 0.4124564 + gl * 0.3575761 + bl * 0.1804375
+    y = rl * 0.2126729 + gl * 0.7151522 + bl * 0.0721750
+    z = rl * 0.0193339 + gl * 0.1191920 + bl * 0.9503041
+    x, y, z = x / 0.95047, y / 1.0, z / 1.08883
+
+    def f(t: float) -> float:
+        return t ** (1 / 3) if t > 0.008856 else (7.787 * t) + (16 / 116)
+
+    fx, fy, fz = f(x), f(y), f(z)
+    return (116 * fy) - 16, 500 * (fx - fy), 200 * (fy - fz)
+
+
+def _lab_dist(a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
+    return sum((a[i] - b[i]) ** 2 for i in range(3)) ** 0.5
+
+
 def nearest_cloth_from_rgb(
     r: int,
     g: int,
@@ -636,6 +659,7 @@ def nearest_cloth_from_rgb(
 ) -> ClothResolve:
     """Map a sampled photo RGB to the closest palette cloth."""
     target = (max(0, min(255, int(r))), max(0, min(255, int(g))), max(0, min(255, int(b))))
+    target_lab = _rgb_to_lab(*target)
     known = known_cloths or set()
     keys = [k for k in CANONICAL if not known or k in known]
     if not keys:
@@ -644,13 +668,14 @@ def nearest_cloth_from_rgb(
     best_d = 1e9
     for key in keys:
         hx = CANONICAL[key].get("hex") or "#bbb"
-        d = _rgb_dist(target, _hex_to_rgb(hx))
+        tr, tg, tb = _hex_to_rgb(hx)
+        d = _lab_dist(target_lab, _rgb_to_lab(tr, tg, tb))
         if d < best_d:
             best_d = d
             best_key = key
     meta = CANONICAL[best_key]
     sampled = "#{:02x}{:02x}{:02x}".format(*target)
-    conf = max(0.0, min(1.0, 1.0 - best_d / 441.0))
+    conf = max(0.0, min(1.0, 1.0 - best_d / 85.0))
     gu = meta.get("gu") or ""
     label = meta["label"]
     message = f"From photo we guess {label}"

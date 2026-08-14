@@ -1068,29 +1068,35 @@ input, select {
 .dhaga-strip-bar {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.65rem;
   width: 100%;
-  min-height: 2.75rem;
-  padding: 0.35rem 0.65rem 0.35rem 0.35rem;
-  border-radius: 10px;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.1);
-  filter: saturate(1.28) contrast(1.08);
+  min-height: 3.1rem;
+  padding: 0.5rem 0.85rem 0.5rem 0.65rem;
+  border-radius: 12px;
+  border: 2px solid rgba(0,0,0,0.12);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.14);
+  filter: saturate(1.32) contrast(1.1);
+}
+.dhaga-strip-bar.approx {
+  border-style: dashed;
+  border-color: rgba(0,0,0,0.18);
 }
 .dhaga-strip-bar.unknown {
-  background: repeating-linear-gradient(45deg, #eee, #eee 6px, #ddd 6px, #ddd 12px) !important;
+  background: repeating-linear-gradient(45deg, #ccc, #ccc 6px, #bbb 6px, #bbb 12px) !important;
 }
 .needle-on-strip {
   flex: 0 0 auto;
-  width: 2.5rem;
-  height: 2.5rem;
+  min-width: 2rem;
+  padding: 0 0.35rem 0 0.15rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
   font-weight: 900;
-  font-size: 1.15rem;
+  font-size: 1.35rem;
   line-height: 1;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
 }
 .dhaga-on-strip-label {
   flex: 1 1 auto;
@@ -1110,19 +1116,26 @@ input, select {
   opacity: 0.92;
 }
 .dhaga-row-large .dhaga-strip-bar {
-  min-height: 3.6rem;
-  padding: 0.45rem 0.8rem 0.45rem 0.45rem;
-  border-radius: 12px;
+  min-height: 4.75rem;
+  padding: 0.65rem 1rem 0.65rem 0.85rem;
+  border-radius: 14px;
+  border-width: 2px;
 }
 .dhaga-row-large .needle-on-strip {
-  width: 3.25rem;
-  height: 3.25rem;
-  font-size: 1.55rem;
-  border-radius: 10px;
+  min-width: 2.75rem;
+  font-size: 2rem;
 }
-.dhaga-row-large .dhaga-on-strip-label { font-size: 1.02rem; }
+.dhaga-row-large .dhaga-on-strip-label { font-size: 1.12rem; font-weight: 900; }
 .dhaga-row.on-cloth .dhaga-strip-bar {
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.28);
+  border-color: rgba(0,0,0,0.2);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.32);
+}
+.dhaga-row.on-cloth .needle-on-strip {
+  font-size: 2.2rem;
+}
+.dhaga-row.picked .dhaga-strip-bar {
+  outline: 3px solid rgba(255,255,255,0.85);
+  outline-offset: 2px;
 }
 .dhaga-row.on-cloth .dhaga-on-strip-label {
   text-shadow: 0 1px 3px rgba(0,0,0,0.2);
@@ -1220,8 +1233,9 @@ body.final-mode #main-shell #page-foot {
   box-shadow: none;
 }
 .final-tikli {
-  background: rgba(255,255,255,0.92) !important;
-  color: #9a3412 !important;
+  background: rgba(0,0,0,0.25) !important;
+  color: #ffe8d6 !important;
+  border: 1px solid rgba(255,255,255,0.25);
 }
 .final-canvas-actions {
   display: flex;
@@ -1235,6 +1249,60 @@ body.final-mode #main-shell #page-foot {
   min-width: 0;
 }
 .final-canvas-actions .btn.ghost {
-  background: rgba(255,255,255,0.92);
-  border-color: transparent;
+  background: rgba(0,0,0,0.22);
+  color: #fff;
+  border-color: rgba(255,255,255,0.35);
+}
+
+/* —— Recipe mode: standard vs personalised —— */
+.recipe-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+.mode-btn {
+  flex: 1 1 0;
+  appearance: none;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 0.55rem 0.65rem;
+  background: rgba(255,255,255,0.7);
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.mode-btn.active {
+  border-color: var(--accent2);
+  background: #e7fff4;
+  color: var(--accent2);
+}
+.personalised-panel {
+  margin-bottom: 0.85rem;
+}
+.personalised-slots-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.personalised-slot-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+  border: 2px dashed var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+.personalised-slot-empty .slot-num {
+  font-size: 1.35rem;
+  font-weight: 900;
+  min-width: 1.75rem;
+}
+.personalised-ready {
+  margin-top: 0.45rem;
+  color: var(--accent2);
+  font-weight: 800;
 }

@@ -134,27 +134,44 @@ def api_thread_shades():
 
 
 def _sample_cloth_rgb(img: Image.Image) -> tuple[int, int, int]:
-    """Dominant cloth colour from centre of photo (screen approx)."""
+    """Dominant cloth colour from photo — centre-weighted, ignores white/black edges."""
+    import numpy as np
+
     img = img.convert("RGB")
     w, h = img.size
-    crop = img.crop((int(w * 0.18), int(h * 0.18), int(w * 0.82), int(h * 0.82)))
-    crop = crop.resize((56, 56), Image.Resampling.LANCZOS)
-    pixels = list(crop.getdata())
-    usable: list[tuple[int, int, int]] = []
-    for pr, pg, pb in pixels:
-        lum = (pr + pg + pb) / 3
-        spread = max(pr, pg, pb) - min(pr, pg, pb)
-        if lum < 16 or lum > 248:
-            continue
-        if spread < 6:
-            continue
-        usable.append((pr, pg, pb))
-    if not usable:
-        usable = list(pixels)
-    r = sum(p[0] for p in usable) // len(usable)
-    g = sum(p[1] for p in usable) // len(usable)
-    b = sum(p[2] for p in usable) // len(usable)
-    return r, g, b
+    crop = img.crop((int(w * 0.12), int(h * 0.12), int(w * 0.88), int(h * 0.88)))
+    arr = np.array(crop.resize((96, 96), Image.Resampling.LANCZOS), dtype=np.float32)
+    hh, ww = arr.shape[:2]
+    yy, xx = np.mgrid[0:hh, 0:ww]
+    cy, cx = (hh - 1) / 2.0, (ww - 1) / 2.0
+    dist = np.sqrt((yy - cy) ** 2 + (xx - cx) ** 2)
+    max_dist = max(float(np.sqrt(cy**2 + cx**2)), 1.0)
+    weight = 1.0 - (dist / max_dist) * 0.55
+
+    rgb = arr.reshape(-1, 3)
+    wts = weight.reshape(-1)
+    lum = rgb.mean(axis=1)
+    chroma = rgb.max(axis=1) - rgb.min(axis=1)
+    mask = (lum > 20) & (lum < 245) & (chroma > 7)
+    if int(mask.sum()) < 80:
+        mask = (lum > 12) & (lum < 250)
+
+    sel = rgb[mask]
+    sel_w = wts[mask]
+    sel_chroma = chroma[mask]
+    if sel.size < 90:
+        sel = rgb
+        sel_w = wts
+        sel_chroma = chroma
+
+    scores = sel_w * (0.55 + np.clip(sel_chroma / 128.0, 0, 1))
+    total = float(scores.sum()) or 1.0
+    mean = (sel * scores[:, None]).sum(axis=0) / total
+    sat_hi = sel[sel_chroma >= np.percentile(sel_chroma, 58)]
+    if sat_hi.size >= 30:
+        mean = 0.62 * mean + 0.38 * sat_hi.mean(axis=0)
+
+    return int(mean[0]), int(mean[1]), int(mean[2])
 
 
 @app.post("/api/detect-cloth-color")

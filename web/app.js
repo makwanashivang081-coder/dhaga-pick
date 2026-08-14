@@ -21,6 +21,13 @@ const STR = {
   resetPicks: "Reset",
   pickStrip: "Pick a recipe strip",
   pickStripMeta: "Tap recipe 1–5. Needle number = cloth colour, strip = dhaga colour.",
+  modeRecipes: "Recipes",
+  modePersonalised: "Personalised",
+  personalisedHint: "Tap any dhaga strip below to set each needle (1–5) from different recipes.",
+  personalisedRecipe: "Personalised recipe",
+  needleSlot: "Needle",
+  slotEmpty: "Tap a strip below",
+  personalisedReady: "All needles set — tap Use this recipe",
   sixColours: "6 colour options",
   approxNote: "Colour strips follow Royal shade card (screen approx)",
   useThis: "Use this recipe",
@@ -66,6 +73,8 @@ const state = {
   selectedRank: 0,
   pickedThread: "",
   pickedHex: "",
+  mode: "standard",
+  personalisedPicks: {},
   resolveTimer: null,
 };
 
@@ -102,6 +111,10 @@ const el = {
   designHelp: document.getElementById("design-help"),
   tikliBanner: document.getElementById("tikli-banner"),
   recipeStrips: document.getElementById("recipe-strips"),
+  modeRecipes: document.getElementById("mode-recipes"),
+  modePersonalised: document.getElementById("mode-personalised"),
+  personalisedPanel: document.getElementById("personalised-panel"),
+  personalisedSlots: document.getElementById("personalised-slots"),
   colourOptions: document.getElementById("colour-options"),
   pickedThread: document.getElementById("picked-thread"),
   useStrip: document.getElementById("use-strip"),
@@ -186,9 +199,32 @@ const SPECIAL_THREAD = {
   bch: "#d4af37",
   m: "#c0c0c0",
   md: "#9aa0a6",
+  lg: "#e8d48b",
+  badla: "#d4af37",
+  black: "#1a1a1a",
+  white: "#f5f5f5",
+  silver: "#c0c0c0",
 };
 
 let shadeCodes = null;
+let numericBases = null;
+
+function buildNumericBases() {
+  numericBases = {};
+  for (const [k, v] of Object.entries(shadeCodes || {})) {
+    if (/^\d+$/.test(k)) numericBases[+k] = v;
+  }
+  return numericBases;
+}
+
+function nearestNumericHex(num) {
+  const bases = numericBases || buildNumericBases();
+  const keys = Object.keys(bases).map(Number);
+  if (!keys.length) return "";
+  if (bases[num]) return bases[num];
+  const nearest = keys.reduce((a, b) => (Math.abs(b - num) < Math.abs(a - num) ? b : a));
+  return bases[nearest] || "";
+}
 
 async function loadShadeCodes() {
   if (shadeCodes) return shadeCodes;
@@ -200,6 +236,7 @@ async function loadShadeCodes() {
     for (const [k, v] of Object.entries(data.codes || {})) {
       if (v) shadeCodes[String(k).toUpperCase()] = String(v).toLowerCase();
     }
+    buildNumericBases();
   } catch (err) {
     shadeCodes = {};
   }
@@ -213,21 +250,23 @@ function parseThreadLabel(thread) {
   const core = low.replace(/\b(royal|raj|thread|dhaga|viscose)\b/g, " ").replace(/\s+/g, " ").trim();
   let m = core.match(/^([a-z]+)\b/);
   if (m && !/\d/.test(m[1])) return { code: m[1], mods: core.slice(m[0].length).trim() };
-  m = core.match(/^(\d+)\s*([a-z]*)/);
+  m = core.match(/^(\d+)(.*)/);
   if (!m) return { code: core, mods: "" };
-  return { code: m[1], mods: (m[2] || "").toLowerCase() };
+  return { code: m[1], mods: (m[2] || "").replace(/[^a-z]/g, "") };
 }
 
 function modifierKeys(code, mods) {
   mods = (mods || "").replace(/[^a-z]/g, "");
   const keys = [];
-  for (const token of ["ll", "dd", "nl", "nd", "st", "dr", "lr"]) {
+  if (mods) {
+    keys.push(code + "." + mods.toUpperCase());
+    for (let i = mods.length - 1; i > 0; i--) keys.push(code + "." + mods.slice(0, i).toUpperCase());
+  }
+  for (const token of ["ll", "dd", "nl", "nd", "st", "dr", "lr", "ds", "dt"]) {
     if (mods.includes(token)) keys.push(code + "." + token.toUpperCase());
   }
-  for (const token of ["l", "d", "n", "s", "b", "f", "r", "t", "p", "u", "c"]) {
-    if (new RegExp("(^|[^a-z])" + token + "([^a-z]|$)").test(mods) || mods.endsWith(token)) {
-      keys.push(code + "." + token.toUpperCase());
-    }
+  for (const token of ["l", "d", "n", "s", "b", "f", "r", "t", "p", "u", "c", "h"]) {
+    if (mods.includes(token)) keys.push(code + "." + token.toUpperCase());
   }
   keys.push(code);
   const seen = new Set();
@@ -271,6 +310,10 @@ function lookupThreadHex(thread) {
   for (const key of modifierKeys(code, mods)) {
     const ku = key.toUpperCase();
     if (codes[ku]) return key.includes(".") ? codes[ku] : applyModifiers(codes[ku], mods);
+  }
+  if (/^\d+$/.test(code)) {
+    const near = nearestNumericHex(+code);
+    if (near) return applyModifiers(near, mods);
   }
   return "";
 }
@@ -360,18 +403,25 @@ function dhagaRowHtml(chip, opts) {
   const clothHex = o.clothHex || state.clothHex || "#128C7E";
   const threadHex = chipHex(chip);
   const num = chip.needle;
-  const numColor = clothTextOn(clothHex);
   const labelColor = threadHex ? clothTextOn(threadHex) : "#111b21";
+  const numColor = threadHex ? clothHex : "#111b21";
+  const numShadow = threadHex
+    ? "0 0 4px rgba(255,255,255,0.95),0 0 8px rgba(255,255,255,0.75),0 2px 6px rgba(0,0,0,0.55)"
+    : "none";
   const tikli = chip.is_tikli
     ? `<span class="chip-tikli">${escapeHtml(t("tikliHere"))}</span>`
     : "";
   const size = o.large ? " dhaga-row-large" : "";
   const onCloth = o.onCloth ? " on-cloth" : "";
-  const bg = threadHex || "#c8c8c8";
+  const picked =
+    o.picked || (state.mode === "personalised" && state.personalisedPicks[num] && state.personalisedPicks[num].thread === chip.thread)
+      ? " picked"
+      : "";
+  const bg = threadHex || "#b0b0b0";
   return `
-    <div class="dhaga-row${size}${onCloth}${chip.is_tikli ? " is-tikli" : ""}">
-      <div class="dhaga-strip-bar${threadHex ? "" : " unknown"}" style="background:${escapeHtml(bg)}">
-        <span class="needle-on-strip" style="background:${escapeHtml(clothHex)};color:${numColor}">${num}</span>
+    <div class="dhaga-row${size}${onCloth}${picked}${chip.is_tikli ? " is-tikli" : ""}" data-needle="${num}">
+      <div class="dhaga-strip-bar${threadHex ? "" : " approx"}" style="background:${escapeHtml(bg)}">
+        <span class="needle-on-strip" style="color:${escapeHtml(numColor)};text-shadow:${numShadow}">${num}</span>
         <span class="dhaga-on-strip-label" style="color:${labelColor}">
           <strong>${escapeHtml(String(chip.thread || ""))}</strong>${tikli}
         </span>
@@ -427,7 +477,10 @@ async function sampleColorFromFile(file) {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0, size, size);
     const data = ctx.getImageData(0, 0, size, size).data;
-    const margin = Math.floor(size * 0.2);
+    const margin = Math.floor(size * 0.12);
+    const cx = (size - 1) / 2;
+    const cy = (size - 1) / 2;
+    const maxDist = Math.sqrt(cx * cx + cy * cy) || 1;
     const usable = [];
     for (let y = margin; y < size - margin; y++) {
       for (let x = margin; x < size - margin; x++) {
@@ -437,15 +490,19 @@ async function sampleColorFromFile(file) {
         const pb = data[i + 2];
         const lum = (pr + pg + pb) / 3;
         const spread = Math.max(pr, pg, pb) - Math.min(pr, pg, pb);
-        if (lum < 16 || lum > 248) continue;
-        if (spread < 6) continue;
-        usable.push([pr, pg, pb]);
+        if (lum < 20 || lum > 245) continue;
+        if (spread < 7) continue;
+        const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+        const w = 1 - (dist / maxDist) * 0.55;
+        const score = w * (0.55 + Math.min(spread / 128, 1));
+        usable.push([pr, pg, pb, score]);
       }
     }
-    const pool = usable.length ? usable : [[128, 128, 128]];
-    const r = pool.reduce((s, p) => s + p[0], 0) / pool.length;
-    const g = pool.reduce((s, p) => s + p[1], 0) / pool.length;
-    const b = pool.reduce((s, p) => s + p[2], 0) / pool.length;
+    const pool = usable.length ? usable : [[128, 128, 128, 1]];
+    const total = pool.reduce((s, p) => s + p[3], 0) || 1;
+    const r = pool.reduce((s, p) => s + p[0] * p[3], 0) / total;
+    const g = pool.reduce((s, p) => s + p[1] * p[3], 0) / total;
+    const b = pool.reduce((s, p) => s + p[2] * p[3], 0) / total;
     return { r, g, b, sampled_hex: hexFromRgb(r, g, b) };
   } finally {
     URL.revokeObjectURL(url);
@@ -762,6 +819,8 @@ function resetStripFlow() {
   state.selectedRank = 0;
   state.pickedThread = "";
   state.pickedHex = "";
+  state.mode = "standard";
+  state.personalisedPicks = {};
   el.finalCanvas.hidden = true;
   document.body.classList.remove("final-mode");
   document.body.style.background = "";
@@ -777,6 +836,10 @@ function resetStripFlow() {
   el.pickedThread.hidden = true;
   el.pickedThread.innerHTML = "";
   el.useStrip.hidden = true;
+  if (el.modeRecipes) el.modeRecipes.classList.add("active");
+  if (el.modePersonalised) el.modePersonalised.classList.remove("active");
+  if (el.personalisedPanel) el.personalisedPanel.hidden = true;
+  if (el.personalisedSlots) el.personalisedSlots.innerHTML = "";
   if (el.designHelp) {
     el.designHelp.hidden = true;
     el.designHelp.textContent = "";
@@ -839,6 +902,9 @@ async function loadRecipes() {
     state.colourOptions = data.colour_options || [];
     await enrichRecipesData();
     if (!state.selectedRank && state.recipes.length) state.selectedRank = 1;
+    if (el.modeRecipes) el.modeRecipes.classList.toggle("active", state.mode === "standard");
+    if (el.modePersonalised) el.modePersonalised.classList.toggle("active", state.mode === "personalised");
+    renderPersonalisedPanel();
     renderRecipeStrips();
     renderColourOptions();
     el.stepPanel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -879,7 +945,93 @@ function showDesignHelp(pct, note, meta) {
 }
 
 function selectedRecipe() {
+  if (state.mode === "personalised" && personalisedComplete()) {
+    return { rank: "P", label: t("personalisedRecipe"), chips: personalisedChips() };
+  }
   return state.recipes.find((r) => r.rank === state.selectedRank) || state.recipes[0] || null;
+}
+
+function personalisedChips() {
+  const out = [];
+  for (let i = 1; i <= state.maxNeedles; i++) {
+    const p = state.personalisedPicks[i];
+    if (!p || !p.thread) continue;
+    out.push({
+      needle: i,
+      thread: p.thread,
+      thread_hex: p.thread_hex || lookupThreadHex(p.thread),
+      is_tikli: Boolean(p.is_tikli),
+    });
+  }
+  return out;
+}
+
+function personalisedComplete() {
+  for (let i = 1; i <= state.maxNeedles; i++) {
+    const p = state.personalisedPicks[i];
+    if (!p || !(p.thread || "").trim()) return false;
+  }
+  return true;
+}
+
+function setRecipeMode(mode) {
+  state.mode = mode === "personalised" ? "personalised" : "standard";
+  if (state.mode === "personalised") {
+    state.personalisedPicks = {};
+    state.selectedRank = 0;
+  }
+  if (el.modeRecipes) el.modeRecipes.classList.toggle("active", state.mode === "standard");
+  if (el.modePersonalised) el.modePersonalised.classList.toggle("active", state.mode === "personalised");
+  renderPersonalisedPanel();
+  renderRecipeStrips();
+  updateUseStripButton();
+}
+
+function renderPersonalisedPanel() {
+  if (!el.personalisedPanel || !el.personalisedSlots) return;
+  const show = state.mode === "personalised";
+  el.personalisedPanel.hidden = !show;
+  if (!show) {
+    el.personalisedSlots.innerHTML = "";
+    return;
+  }
+  const slots = [];
+  for (let i = 1; i <= state.maxNeedles; i++) {
+    const pick = state.personalisedPicks[i];
+    if (pick && pick.thread) {
+      slots.push(dhagaRowHtml({ ...pick, needle: i }, { clothHex: state.clothHex, picked: true }));
+    } else {
+      slots.push(
+        `<div class="personalised-slot-empty"><span class="slot-num" style="color:${escapeHtml(state.clothHex)}">${i}</span><span>${escapeHtml(t("slotEmpty"))}</span></div>`
+      );
+    }
+  }
+  el.personalisedSlots.innerHTML =
+    `<p class="meta personalised-hint">${escapeHtml(t("personalisedHint"))}</p>` +
+    `<div class="personalised-slots-row">${slots.join("")}</div>` +
+    (personalisedComplete() ? `<p class="meta personalised-ready">${escapeHtml(t("personalisedReady"))}</p>` : "");
+}
+
+function updateUseStripButton() {
+  if (!el.useStrip) return;
+  if (state.mode === "personalised") {
+    el.useStrip.hidden = !personalisedComplete();
+  } else {
+    el.useStrip.hidden = !state.selectedRank;
+  }
+}
+
+function assignPersonalisedPick(chip) {
+  if (!chip || !chip.needle) return;
+  state.personalisedPicks[chip.needle] = {
+    needle: chip.needle,
+    thread: chip.thread,
+    thread_hex: chipHex(chip),
+    is_tikli: Boolean(chip.is_tikli),
+  };
+  renderPersonalisedPanel();
+  renderRecipeStrips();
+  updateUseStripButton();
 }
 
 function renderRecipeStrips() {
@@ -914,11 +1066,12 @@ function renderRecipeStrips() {
 
   el.recipeStrips.querySelectorAll(".recipe-strip-card").forEach((btn) => {
     btn.addEventListener("click", () => {
+      if (state.mode === "personalised") return;
       state.selectedRank = Number(btn.getAttribute("data-rank") || 1);
       state.pickedThread = "";
       state.pickedHex = "";
       renderRecipeStrips();
-      el.useStrip.hidden = false;
+      updateUseStripButton();
     });
   });
   el.recipeStrips.querySelectorAll(".dhaga-row").forEach((row) => {
@@ -927,14 +1080,29 @@ function renderRecipeStrips() {
       const wrap = row.closest(".recipe-strip-card");
       const nameEl = row.querySelector(".dhaga-on-strip-label strong");
       const bar = row.querySelector(".dhaga-strip-bar");
-      state.pickedThread = nameEl ? nameEl.textContent.trim() : "";
-      state.pickedHex = bar && bar.style.background ? bar.style.background : "";
+      const needle = Number(row.getAttribute("data-needle") || 0);
+      const thread = nameEl ? nameEl.textContent.trim() : "";
+      const hex = bar && bar.style.background ? bar.style.background : lookupThreadHex(thread);
+      if (state.mode === "personalised") {
+        const rec = state.recipes.find((r) => r.rank === Number(wrap && wrap.getAttribute("data-rank")));
+        const chip = (rec && rec.chips || []).find((c) => c.needle === needle && c.thread === thread) || {
+          needle,
+          thread,
+          thread_hex: hex,
+          is_tikli: false,
+        };
+        assignPersonalisedPick(chip);
+        return;
+      }
+      state.pickedThread = thread;
+      state.pickedHex = hex;
       if (wrap) state.selectedRank = Number(wrap.getAttribute("data-rank") || state.selectedRank);
       renderRecipeStrips();
-      el.useStrip.hidden = false;
+      updateUseStripButton();
     });
   });
-  el.useStrip.hidden = !state.selectedRank;
+  updateUseStripButton();
+  if (state.mode === "personalised") renderPersonalisedPanel();
   showSelectedThreadPreview();
 }
 
@@ -1001,7 +1169,10 @@ function showFinal() {
   if (el.pageBg) el.pageBg.style.display = "none";
   el.finalCanvas.hidden = false;
   el.finalCanvasBg.style.background = cloth;
-  el.finalClothName.textContent = clothDisplayName() + " · " + t("recipe") + " " + rec.rank;
+  el.finalClothName.textContent =
+    clothDisplayName() +
+    " · " +
+    (rec.rank === "P" ? t("personalisedRecipe") : t("recipe") + " " + rec.rank);
   el.finalDhagaStrips.innerHTML = chips
     .map((c) => dhagaRowHtml(c, { clothHex: cloth, large: true, onCloth: true }))
     .join("");
@@ -1043,9 +1214,13 @@ el.designClear.addEventListener("click", clearDesignPhoto);
 
 el.start.addEventListener("click", () => {
   state.selectedRank = 0;
+  state.mode = "standard";
+  state.personalisedPicks = {};
   loadRecipes();
 });
 el.resetPicks.addEventListener("click", resetStripFlow);
+if (el.modeRecipes) el.modeRecipes.addEventListener("click", () => setRecipeMode("standard"));
+if (el.modePersonalised) el.modePersonalised.addEventListener("click", () => setRecipeMode("personalised"));
 el.useStrip.addEventListener("click", showFinal);
 el.changeStrip.addEventListener("click", () => {
   el.finalCanvas.hidden = true;
