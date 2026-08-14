@@ -1,73 +1,89 @@
-"""Approximate Raj/Royal thread colours for UI dots (not exact shade-card matches)."""
+"""Map Raj/Royal thread labels → shade-card hex for UI dots.
+
+Only verified codes from models/thread_shade_hex.json are shown.
+Unknown codes get no fake colour (avoids rust-for-315 style mismatches).
+"""
 from __future__ import annotations
 
+import json
 import re
 from functools import lru_cache
+from pathlib import Path
 
-# Rough “upar se” map for common codes seen in Jeetubhai book.
-# Not shade-card accurate — dad-friendly hint only.
-_BASE: dict[str, str] = {
-    "8": "#f2e6d8",
-    "33": "#c9a66b",
-    "65": "#d4a017",
-    "75": "#e8d5a3",
-    "110": "#f5f0e6",
-    "118": "#f7f3ea",
-    "125": "#f0c4a0",
-    "188": "#2f6fed",
-    "190": "#c9a227",
-    "235": "#e8b4bc",
-    "315": "#c45c26",
-    "321": "#8b3a2a",
-    "335": "#d4762c",
-    "341": "#a3482b",
-    "343": "#b85c38",
-    "372": "#6b4c9a",
-    "710": "#2a6f4e",
-    "722": "#1f6b4a",
-    "723": "#245c3a",
-    "727": "#3d8b6e",
-    "728": "#2f7a55",
-    "741": "#d4af37",
-    "751": "#e6c35c",
-    "820": "#1a1a1a",
-    "834": "#5c4033",
-    "840": "#4a3728",
+_ROOT = Path(__file__).resolve().parents[2]
+_SHADE_PATH = _ROOT / "models" / "thread_shade_hex.json"
+
+# Jari / metallic — not on viscose shade card numbering.
+_SPECIAL: dict[str, str] = {
+    "jari": "#d4af37",
+    "zari": "#d4af37",
+    "vw": "#d4af37",
+    "bch": "#d4af37",
     "m": "#c0c0c0",
     "md": "#9aa0a6",
-    "bch": "#d4af37",
 }
 
-_HUE_BANDS = [
-    (0, 50, "#f5f0e6"),
-    (51, 100, "#f0d78c"),
-    (101, 150, "#e8b4bc"),
-    (151, 200, "#c9a227"),
-    (201, 250, "#e89cae"),
-    (251, 300, "#c45c26"),
-    (301, 350, "#b85c38"),
-    (351, 400, "#6b4c9a"),
-    (401, 500, "#4c6ef5"),
-    (501, 600, "#0b7285"),
-    (601, 700, "#2f9e44"),
-    (701, 800, "#1f6b4a"),
-    (801, 900, "#5c4033"),
-    (901, 9999, "#212529"),
-]
+
+@lru_cache(maxsize=1)
+def _shade_codes() -> dict[str, str]:
+    if not _SHADE_PATH.exists():
+        return {}
+    try:
+        data = json.loads(_SHADE_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    codes = data.get("codes") or {}
+    return {str(k).upper(): str(v).lower() for k, v in codes.items() if v}
 
 
-def _parse(thread: str) -> tuple[str, str]:
+def _parse(thread: str) -> tuple[str, str, str]:
+    """Return (numeric_or_alpha_code, modifiers, brand)."""
     s = " ".join((thread or "").strip().split())
     if not s:
-        return "", ""
+        return "", "", ""
     low = s.lower()
-    m = re.match(r"^([a-z]+)\b", low)
+    brand = ""
+    if re.search(r"\broyal\b", low):
+        brand = "royal"
+    elif re.search(r"\braj\b", low):
+        brand = "raj"
+
+    # Strip brand / filler words so they are never treated as L/D modifiers.
+    core = re.sub(r"\b(royal|raj|thread|dhaga|viscose)\b", " ", low)
+    core = " ".join(core.split())
+
+    m = re.match(r"^([a-z]+)\b", core)
     if m and not re.search(r"\d", m.group(1)):
-        return m.group(1), low[m.end() :].strip()
-    m = re.match(r"^(\d+)\s*([a-z]*)", low)
+        return m.group(1), core[m.end() :].strip(), brand
+
+    m = re.match(r"^(\d+)\s*([a-z]*)", core)
     if not m:
-        return low, ""
-    return m.group(1), (m.group(2) or "").lower()
+        return core, "", brand
+    return m.group(1), (m.group(2) or "").lower(), brand
+
+
+def _modifier_keys(code: str, mods: str) -> list[str]:
+    """Lookup keys from most specific to base, e.g. 118.LL → 118.L → 118."""
+    mods = re.sub(r"[^a-z]", "", (mods or "").lower())
+    keys: list[str] = []
+    # longest modifier tokens first
+    for token in ("ll", "dd", "nl", "nd", "st", "dr", "lr"):
+        if token in mods:
+            keys.append(f"{code}.{token.upper()}")
+    for token in ("l", "d", "n", "s", "b", "f", "r", "t", "p", "u", "c"):
+        # whole-token or trailing letter (avoid matching L inside LL twice)
+        if re.search(rf"(^|[^a-z]){token}([^a-z]|$)", mods) or mods.endswith(token):
+            keys.append(f"{code}.{token.upper()}")
+    keys.append(code)
+    # dedupe preserve order
+    seen: set[str] = set()
+    out: list[str] = []
+    for k in keys:
+        ku = k.upper()
+        if ku not in seen:
+            seen.add(ku)
+            out.append(ku)
+    return out
 
 
 def _scale_hex(hex_color: str, factor: float) -> str:
@@ -84,61 +100,86 @@ def _scale_hex(hex_color: str, factor: float) -> str:
 
 
 def _apply_modifiers(hex_color: str, mods: str) -> str:
+    """Lighten/darken only when shade card lacks that exact modifier key."""
     mods = (mods or "").lower()
     factor = 1.0
     if "ll" in mods:
-        factor = 1.35
-    elif re.search(r"(^|[^a-z])l([^a-z]|$)", mods) or " nl" in f" {mods}" or mods.startswith("nl"):
-        factor = 1.2
+        factor = 1.28
+    elif re.search(r"(^|[^a-z])l([^a-z]|$)", mods) or "nl" in mods:
+        factor = 1.16
     elif "dd" in mods:
         factor = 0.55
     elif re.search(r"(^|[^a-z])d([^a-z]|$)", mods):
-        factor = 0.72
+        factor = 0.78
     if abs(factor - 1.0) < 0.01:
         return hex_color
     return _scale_hex(hex_color, factor)
 
 
-def _band_for_number(n: int) -> str:
-    for lo, hi, hx in _HUE_BANDS:
-        if lo <= n <= hi:
-            return hx
-    return "#868e96"
-
-
-@lru_cache(maxsize=2048)
-def thread_approx_hex(thread: str) -> str:
-    """Approximate display colour for a thread label like '65 Royal' / '118 L Royal'."""
+@lru_cache(maxsize=4096)
+def thread_approx_hex(thread: str) -> str | None:
+    """Shade-card hex for a label like '315 Royal', or None if unknown."""
     s = (thread or "").strip()
     if not s:
-        return "#c4b8a5"
+        return None
     low = s.lower()
     if "jari" in low or "zari" in low:
-        return "#d4af37"
-    code, mods = _parse(s)
-    blob = f"{mods} {low}"
-    if code in _BASE:
-        return _apply_modifiers(_BASE[code], blob)
-    if code.isdigit():
-        return _apply_modifiers(_band_for_number(int(code)), blob)
-    palette = [
-        "#e03131",
-        "#ff922b",
-        "#f4d03f",
-        "#2f9e44",
-        "#22b8cf",
-        "#4c6ef5",
-        "#9b59b6",
-        "#d6336c",
-        "#8d6e63",
-        "#868e96",
-    ]
-    return palette[sum(ord(c) for c in low) % len(palette)]
+        return _SPECIAL["jari"]
+
+    code, mods, _brand = _parse(s)
+    if not code:
+        return None
+
+    if code in _SPECIAL and not code.isdigit():
+        return _SPECIAL[code]
+
+    shade = _shade_codes()
+    if not shade:
+        return None
+
+    # Use parsed modifiers only — never the full label (avoids "Royal" → L).
+    for key in _modifier_keys(code, mods):
+        if key in shade:
+            hx = shade[key]
+            # Exact modifier hit — no further scaling.
+            if "." in key:
+                return hx
+            return _apply_modifiers(hx, mods)
+
+    return None
 
 
 def enrich_options_with_thread_colour(options: list[dict]) -> list[dict]:
     for opt in options:
         thread = opt.get("thread") or ""
-        opt["thread_hex"] = thread_approx_hex(thread)
-        opt["thread_colour_note"] = "approx"
+        hx = thread_approx_hex(thread)
+        if hx:
+            opt["thread_hex"] = hx
+            opt["thread_colour_note"] = "shade_card"
+        else:
+            opt.pop("thread_hex", None)
+            opt["thread_colour_note"] = "unknown"
     return options
+
+
+def needle_chip(needle: int, thread: str, tikli_needle: int | None = None) -> dict:
+    """One paint-strip chip: needle index, thread label, shade-card hex if known."""
+    t = (thread or "").strip()
+    hx = thread_approx_hex(t) if t else None
+    return {
+        "needle": needle,
+        "thread": t,
+        "thread_hex": hx,
+        "thread_colour_note": "shade_card" if hx else "unknown",
+        "is_tikli": bool(tikli_needle and tikli_needle == needle),
+    }
+
+
+def enrich_recipe_needles(needles: list[str], tikli_needle: int | None = None) -> list[dict]:
+    chips: list[dict] = []
+    for i, thread in enumerate(list(needles or [])[:5], start=1):
+        t = (thread or "").strip()
+        if not t:
+            continue
+        chips.append(needle_chip(i, t, tikli_needle))
+    return chips

@@ -250,6 +250,124 @@ class LiteRecommender:
             opt["rank"] = i
         return options
 
+    def recommend_recipes(
+        self,
+        query: PredictRequest,
+        top_n: int = 5,
+        colour_n: int = 6,
+    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+        """Top full dhaga maps (paint strips) plus extra unique colour chips."""
+        query = PredictRequest(
+            cloth=normalize_cloth(query.cloth),
+            design_no=(query.design_no or "").strip(),
+            parts=normalize_parts(query.parts or ""),
+            thread_count=query.thread_count or 0,
+            similar_design_nos=[str(x).strip() for x in (query.similar_design_nos or []) if str(x).strip()],
+        )
+        pool = self._pool(query)
+        locked: dict[int, str] = {}
+        scored = sorted(
+            ((self._score(query, r, locked), r) for r in pool),
+            key=lambda x: (-x[0], x[1].recipe_id),
+        )
+
+        recipes: list[dict[str, Any]] = []
+        seen_sig: set[tuple[str, ...]] = set()
+        colour_counts: dict[str, tuple[int, str]] = {}
+
+        def note_thread(thread: str) -> None:
+            t = (thread or "").strip()
+            if not t or "jari" in t.lower():
+                return
+            key = _norm_thread(t)
+            prev = colour_counts.get(key)
+            colour_counts[key] = ((prev[0] + 1) if prev else 1, t)
+
+        for score, r in scored:
+            needles = [(n or "").strip() for n in (r.needles or [])]
+            while len(needles) < MAX_NEEDLES:
+                needles.append("")
+            filled = [n for n in needles if n]
+            if not filled:
+                continue
+            if query.thread_count and r.thread_count and r.thread_count != query.thread_count:
+                # keep as fallback later; skip on first pass
+                pass
+            sig = tuple(_norm_thread(n) for n in needles)
+            for n in filled:
+                note_thread(n)
+            if sig in seen_sig:
+                continue
+            if query.thread_count and r.thread_count and r.thread_count != query.thread_count:
+                continue
+            seen_sig.add(sig)
+            recipes.append(
+                {
+                    "rank": len(recipes) + 1,
+                    "recipe_id": r.recipe_id,
+                    "needles": needles,
+                    "thread_count": r.thread_count or len(filled),
+                    "score": round(float(score), 2),
+                    "from_design": r.design_no,
+                    "from_cloth": r.cloth,
+                    "match_reason": self._reason(query, r),
+                    "tikli": r.tikli or "",
+                    "tikli_needle": r.tikli_needle,
+                    "tikli_label": tikli_label(r.tikli_needle, bool(r.tikli or r.tikli_needle)),
+                }
+            )
+            if len(recipes) >= top_n:
+                break
+
+        if len(recipes) < top_n:
+            for score, r in scored:
+                needles = [(n or "").strip() for n in (r.needles or [])]
+                while len(needles) < MAX_NEEDLES:
+                    needles.append("")
+                filled = [n for n in needles if n]
+                if not filled:
+                    continue
+                sig = tuple(_norm_thread(n) for n in needles)
+                if sig in seen_sig:
+                    continue
+                seen_sig.add(sig)
+                recipes.append(
+                    {
+                        "rank": len(recipes) + 1,
+                        "recipe_id": r.recipe_id,
+                        "needles": needles,
+                        "thread_count": r.thread_count or len(filled),
+                        "score": round(float(score), 2),
+                        "from_design": r.design_no,
+                        "from_cloth": r.cloth,
+                        "match_reason": self._reason(query, r),
+                        "tikli": r.tikli or "",
+                        "tikli_needle": r.tikli_needle,
+                        "tikli_label": tikli_label(r.tikli_needle, bool(r.tikli or r.tikli_needle)),
+                    }
+                )
+                if len(recipes) >= top_n:
+                    break
+
+        for i, rec in enumerate(recipes, start=1):
+            rec["rank"] = i
+
+        colours: list[dict[str, Any]] = []
+        used = {_norm_thread(n) for rec in recipes for n in rec.get("needles") or [] if n}
+        for key, (cnt, thread) in sorted(colour_counts.items(), key=lambda x: -x[1][0]):
+            colours.append(
+                {
+                    "rank": len(colours) + 1,
+                    "thread": thread,
+                    "count": cnt,
+                    "in_recipes": key in used,
+                }
+            )
+            if len(colours) >= colour_n:
+                break
+
+        return recipes, colours
+
     def suggest_tikli(self, query: PredictRequest) -> dict[str, Any]:
         """Majority tikli needle from exact / similar / cloth-matched history."""
         q = PredictRequest(

@@ -3,85 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#fff6d8" />
+  <meta name="theme-color" content="#075E54" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Dhaga Pick</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/styles.css?v=11" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Gujarati:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/styles.css?v=12" />
 </head>
 <body>
   <div class="bg"></div>
   <main class="shell">
     <header class="hero">
-      <p class="brand">Dhaga Pick</p>
-      <h1>Pick cloth, then pick each dhaga</h1>
-      <p class="sub">Tap a colour, or type it in English / Gujarati. Optionally add a design photo. Then pick each needle.</p>
+      <div class="hero-top">
+        <p class="brand">Dhaga Pick</p>
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="en" id="lang-en">EN</button>
+          <button type="button" class="lang-btn" data-lang="gu" id="lang-gu">ગુજ</button>
+        </div>
+      </div>
+      <h1 data-i18n="heroTitle">Pick cloth, then pick a dhaga strip</h1>
+      <p class="sub" data-i18n="heroSub">Tap a bold colour. Optionally add a design photo. Then choose one of 5 recipe strips.</p>
     </header>
 
     <section class="panel form-panel">
       <div class="block">
-        <span class="block-label">1 · Cloth colour — tap one</span>
+        <span class="block-label" data-i18n="stepCloth">1 · Cloth colour — tap one</span>
         <div id="cloth-swatches" class="swatches">
-          <button type="button" class="swatch" data-id="green" data-label="Green"><span class="dot" style="background:#2f9e44"></span><span class="name">Green</span></button>
-          <button type="button" class="swatch" data-id="pink" data-label="Pink"><span class="dot" style="background:#f783ac"></span><span class="name">Pink</span></button>
-          <button type="button" class="swatch" data-id="blue" data-label="Blue"><span class="dot" style="background:#4c6ef5"></span><span class="name">Blue</span></button>
-          <button type="button" class="swatch" data-id="yellow" data-label="Yellow"><span class="dot" style="background:#f4d03f"></span><span class="name">Yellow</span></button>
-          <button type="button" class="swatch" data-id="purple" data-label="Purple"><span class="dot" style="background:#9b59b6"></span><span class="name">Purple</span></button>
-          <button type="button" class="swatch" data-id="firozi" data-label="Firozi"><span class="dot" style="background:#22b8cf"></span><span class="name">Firozi</span></button>
-          <button type="button" class="swatch" data-id="orange" data-label="Orange"><span class="dot" style="background:#ff922b"></span><span class="name">Orange</span></button>
-          <button type="button" class="swatch" data-id="peach" data-label="Peach"><span class="dot" style="background:#ffc9a8"></span><span class="name">Peach</span></button>
-          <button type="button" class="swatch" data-id="red" data-label="Red"><span class="dot" style="background:#e03131"></span><span class="name">Red</span></button>
-          <button type="button" class="swatch" data-id="rust" data-label="Rust"><span class="dot" style="background:#c0392b"></span><span class="name">Rust</span></button>
-          <button type="button" class="swatch" data-id="rama" data-label="Rama"><span class="dot" style="background:#0b7285"></span><span class="name">Rama</span></button>
-          <button type="button" class="swatch" data-id="maroon" data-label="Maroon"><span class="dot" style="background:#7b1e3a"></span><span class="name">Maroon</span></button>
-          <button type="button" class="swatch" data-id="wine" data-label="Wine"><span class="dot" style="background:#5c0a1f"></span><span class="name">Wine</span></button>
-          <button type="button" class="swatch" data-id="black" data-label="Black"><span class="dot" style="background:#212529"></span><span class="name">Black</span></button>
-          <button type="button" class="swatch" data-id="white" data-label="White"><span class="dot" style="background:#f8f9fa"></span><span class="name">White</span></button>
-          <button type="button" class="swatch" data-id="cream" data-label="Cream"><span class="dot" style="background:#fff3bf"></span><span class="name">Cream</span></button>
-          <button type="button" class="swatch" data-id="grey" data-label="Grey"><span class="dot" style="background:#868e96"></span><span class="name">Grey</span></button>
-          <button type="button" class="swatch" data-id="brown" data-label="Brown"><span class="dot" style="background:#8d6e63"></span><span class="name">Brown</span></button>
-          <button type="button" class="swatch" data-id="gold" data-label="Gold"><span class="dot" style="background:#e6b422"></span><span class="name">Gold</span></button>
-          <button type="button" class="swatch" data-id="mustard" data-label="Mustard"><span class="dot" style="background:#e1a100"></span><span class="name">Mustard</span></button>
-          <button type="button" class="swatch" data-id="lemon" data-label="Lemon"><span class="dot" style="background:#ffe066"></span><span class="name">Lemon</span></button>
-          <button type="button" class="swatch" data-id="fawn" data-label="Badami" data-hex="#d4a574"><span class="dot" style="background:#d4a574"></span><span class="name">Badami</span></button>
-          <button type="button" class="swatch" data-id="chiku" data-label="Chiku"><span class="dot" style="background:#c4a484"></span><span class="name">Chiku</span></button>
-          <button type="button" class="swatch" data-id="pista" data-label="Pista"><span class="dot" style="background:#a3d977"></span><span class="name">Pista</span></button>
-          <button type="button" class="swatch" data-id="light green" data-label="Light green"><span class="dot" style="background:#8ce99a"></span><span class="name">Light green</span></button>
-          <button type="button" class="swatch" data-id="sky blue" data-label="Sky blue"><span class="dot" style="background:#74c0fc"></span><span class="name">Sky blue</span></button>
-          <button type="button" class="swatch" data-id="violet" data-label="Violet"><span class="dot" style="background:#7950f2"></span><span class="name">Violet</span></button>
-          <button type="button" class="swatch" data-id="rani" data-label="Rani"><span class="dot" style="background:#d6336c"></span><span class="name">Rani</span></button>
-          <button type="button" class="swatch" data-id="gajri" data-label="Gajri"><span class="dot" style="background:#e8590c"></span><span class="name">Gajri</span></button>
+          <button type="button" class="swatch" data-id="green" data-label="Green" data-gu="લીલો"><span class="dot" style="background:#128C7E"></span><span class="name">Green</span><span class="name-gu">લીલો</span></button>
+          <button type="button" class="swatch" data-id="pink" data-label="Pink" data-gu="ગુલાબી"><span class="dot" style="background:#E91E63"></span><span class="name">Pink</span><span class="name-gu">ગુલાબી</span></button>
+          <button type="button" class="swatch" data-id="blue" data-label="Blue" data-gu="વાદળી"><span class="dot" style="background:#1A73E8"></span><span class="name">Blue</span><span class="name-gu">વાદળી</span></button>
+          <button type="button" class="swatch" data-id="yellow" data-label="Yellow" data-gu="પીળો"><span class="dot" style="background:#F4C20D"></span><span class="name">Yellow</span><span class="name-gu">પીળો</span></button>
+          <button type="button" class="swatch" data-id="purple" data-label="Purple" data-gu="જાંબલી"><span class="dot" style="background:#7B1FA2"></span><span class="name">Purple</span><span class="name-gu">જાંબલી</span></button>
+          <button type="button" class="swatch" data-id="firozi" data-label="Firozi" data-gu="ફિરોઝી"><span class="dot" style="background:#00BCD4"></span><span class="name">Firozi</span><span class="name-gu">ફિરોઝી</span></button>
+          <button type="button" class="swatch" data-id="orange" data-label="Orange" data-gu="નારંગી"><span class="dot" style="background:#FF6D00"></span><span class="name">Orange</span><span class="name-gu">નારંગી</span></button>
+          <button type="button" class="swatch" data-id="peach" data-label="Peach" data-gu="પીચ"><span class="dot" style="background:#FF8A65"></span><span class="name">Peach</span><span class="name-gu">પીચ</span></button>
+          <button type="button" class="swatch" data-id="red" data-label="Red" data-gu="લાલ"><span class="dot" style="background:#E53935"></span><span class="name">Red</span><span class="name-gu">લાલ</span></button>
+          <button type="button" class="swatch" data-id="rust" data-label="Rust" data-gu="રસ્ટ"><span class="dot" style="background:#BF360C"></span><span class="name">Rust</span><span class="name-gu">રસ્ટ</span></button>
+          <button type="button" class="swatch" data-id="rama" data-label="Rama" data-gu="રામા"><span class="dot" style="background:#00695C"></span><span class="name">Rama</span><span class="name-gu">રામા</span></button>
+          <button type="button" class="swatch" data-id="maroon" data-label="Maroon" data-gu="મેરૂન"><span class="dot" style="background:#6D0F2B"></span><span class="name">Maroon</span><span class="name-gu">મેરૂન</span></button>
+          <button type="button" class="swatch" data-id="wine" data-label="Wine" data-gu="વાઇન"><span class="dot" style="background:#4A0E24"></span><span class="name">Wine</span><span class="name-gu">વાઇન</span></button>
+          <button type="button" class="swatch" data-id="black" data-label="Black" data-gu="કાળો"><span class="dot" style="background:#111111"></span><span class="name">Black</span><span class="name-gu">કાળો</span></button>
+          <button type="button" class="swatch" data-id="white" data-label="White" data-gu="સફેદ"><span class="dot" style="background:#FAFAFA"></span><span class="name">White</span><span class="name-gu">સફેદ</span></button>
+          <button type="button" class="swatch" data-id="cream" data-label="Cream" data-gu="ક્રીમ"><span class="dot" style="background:#FFF3BF"></span><span class="name">Cream</span><span class="name-gu">ક્રીમ</span></button>
+          <button type="button" class="swatch" data-id="grey" data-label="Grey" data-gu="રાખોડી"><span class="dot" style="background:#616161"></span><span class="name">Grey</span><span class="name-gu">રાખોડી</span></button>
+          <button type="button" class="swatch" data-id="brown" data-label="Brown" data-gu="ભૂરો"><span class="dot" style="background:#6D4C41"></span><span class="name">Brown</span><span class="name-gu">ભૂરો</span></button>
+          <button type="button" class="swatch" data-id="gold" data-label="Gold" data-gu="સોનેરી"><span class="dot" style="background:#D4A017"></span><span class="name">Gold</span><span class="name-gu">સોનેરી</span></button>
+          <button type="button" class="swatch" data-id="mustard" data-label="Mustard" data-gu="રાઈ"><span class="dot" style="background:#C79100"></span><span class="name">Mustard</span><span class="name-gu">રાઈ</span></button>
+          <button type="button" class="swatch" data-id="lemon" data-label="Lemon" data-gu="લીંબુ"><span class="dot" style="background:#FFEB3B"></span><span class="name">Lemon</span><span class="name-gu">લીંબુ</span></button>
+          <button type="button" class="swatch" data-id="fawn" data-label="Badami" data-hex="#C48A58" data-gu="બદામી"><span class="dot" style="background:#C48A58"></span><span class="name">Badami</span><span class="name-gu">બદામી</span></button>
+          <button type="button" class="swatch" data-id="chiku" data-label="Chiku" data-gu="ચીકૂ"><span class="dot" style="background:#A67C52"></span><span class="name">Chiku</span><span class="name-gu">ચીકૂ</span></button>
+          <button type="button" class="swatch" data-id="pista" data-label="Pista" data-gu="પિસ્તા"><span class="dot" style="background:#7CB342"></span><span class="name">Pista</span><span class="name-gu">પિસ્તા</span></button>
+          <button type="button" class="swatch" data-id="light green" data-label="Light green" data-gu="આછો લીલો"><span class="dot" style="background:#66BB6A"></span><span class="name">Light green</span><span class="name-gu">આછો લીલો</span></button>
+          <button type="button" class="swatch" data-id="sky blue" data-label="Sky blue" data-gu="આકાશી"><span class="dot" style="background:#29B6F6"></span><span class="name">Sky blue</span><span class="name-gu">આકાશી</span></button>
+          <button type="button" class="swatch" data-id="violet" data-label="Violet" data-gu="વાયોલેટ"><span class="dot" style="background:#5E35B1"></span><span class="name">Violet</span><span class="name-gu">વાયોલેટ</span></button>
+          <button type="button" class="swatch" data-id="rani" data-label="Rani" data-gu="રાણી"><span class="dot" style="background:#C2185B"></span><span class="name">Rani</span><span class="name-gu">રાણી</span></button>
+          <button type="button" class="swatch" data-id="gajri" data-label="Gajri" data-gu="ગાજરી"><span class="dot" style="background:#E65100"></span><span class="name">Gajri</span><span class="name-gu">ગાજરી</span></button>
         </div>
-        <p id="cloth-picked" class="picked-line">Tap a colour above</p>
+        <p id="cloth-picked" class="picked-line" data-i18n="tapColour">Tap a colour above</p>
+
+        <div id="chosen-cloth-strip" class="paint-cloth-strip" hidden>
+          <div class="paint-cloth-chips">
+            <span class="paint-cloth-chip light"></span>
+            <span class="paint-cloth-chip mid"></span>
+            <span class="paint-cloth-chip dark"></span>
+          </div>
+          <p id="chosen-cloth-label" class="paint-cloth-caption"></p>
+        </div>
 
         <div id="shade-panel" class="shade-panel" hidden>
-          <span class="block-label">How light / dark is this cloth?</span>
+          <span class="block-label" data-i18n="shadeAsk">How light / dark is this cloth?</span>
           <p id="shade-colour-name" class="shade-colour-name">Green</p>
           <div class="shade-wrap">
             <div class="shade-labels">
-              <span>Lighter</span>
-              <span id="shade-mid-label">Normal</span>
-              <span>Darker</span>
+              <span data-i18n="lighter">Lighter</span>
+              <span id="shade-mid-label" data-i18n="normal">Normal</span>
+              <span data-i18n="darker">Darker</span>
             </div>
-            <input id="shade-bar" class="shade-bar" type="range" min="0" max="100" value="50" />
+            <div class="shade-track">
+              <input id="shade-bar" class="shade-bar" type="range" min="0" max="100" value="50" />
+            </div>
           </div>
-          <p id="cloth-verify" class="cloth-verify">Slide for lighter or darker shade</p>
+          <p id="cloth-verify" class="cloth-verify" data-i18n="slideShade">Slide for lighter or darker shade</p>
         </div>
 
         <div class="cloth-open">
-          <span class="block-label">Or type the colour <em>(if not in the list)</em></span>
+          <span class="block-label" data-i18n="orType">Or type the colour <em>(if not in the list)</em></span>
           <input id="cloth-text" type="text" inputmode="text" autocomplete="off"
+            data-i18n-placeholder="typeColour"
             placeholder="Type here: phone, gulabi, lilo, પીળો…" />
         </div>
       </div>
 
       <div class="block">
-        <span class="block-label">2 · Design photo <em>(optional)</em></span>
-        <button type="button" class="btn gallery-open" id="open-gallery">Choose from my gallery</button>
+        <span class="block-label" data-i18n="stepPhoto">2 · Design photo <em>(optional)</em></span>
+        <button type="button" class="btn gallery-open" id="open-gallery" data-i18n="choosePhoto">Choose from my gallery</button>
         <input id="gallery-upload" type="file" accept="image/*" hidden />
-        <button type="button" class="btn ghost small" id="gallery-clear" hidden>Clear photo</button>
+        <button type="button" class="btn ghost small" id="gallery-clear" hidden data-i18n="clearPhoto">Clear photo</button>
         <div id="gallery-selected" class="gallery-selected" hidden></div>
         <div id="exact-design" class="exact-design" hidden>
           <p class="exact-title" id="exact-title"></p>
@@ -89,28 +107,14 @@
           <div id="past-recipes" class="past-recipes"></div>
         </div>
         <div id="similar-row" class="similar-row" hidden>
-          <p class="similar-label">Similar past designs</p>
+          <p class="similar-label" data-i18n="similarPast">Similar past designs</p>
           <div id="similar-list" class="similar-list"></div>
         </div>
       </div>
 
-      <div class="block row-2">
+      <div class="block">
         <label>
-          <span>Part</span>
-          <select id="parts">
-            <option value="">Any</option>
-            <option value="neck">Neck</option>
-            <option value="border">Border</option>
-            <option value="neck+border">Neck + Border</option>
-            <option value="kp">KP</option>
-            <option value="body">Body</option>
-            <option value="daman">Daman</option>
-            <option value="astin">Astin</option>
-            <option value="butti">Butti</option>
-          </select>
-        </label>
-        <label>
-          <span>Total needles</span>
+          <span data-i18n="totalNeedles">Total needles</span>
           <select id="threads">
             <option value="3">3</option>
             <option value="4">4</option>
@@ -120,40 +124,45 @@
       </div>
 
       <div class="actions">
-        <button type="button" class="btn primary" id="start">Start Needle 1</button>
-        <button type="button" class="btn ghost" id="reset-picks" hidden>Reset dhaga picks</button>
+        <button type="button" class="btn primary" id="start" data-i18n="showStrips">Show 5 recipe strips</button>
+        <button type="button" class="btn ghost" id="reset-picks" hidden data-i18n="resetPicks">Reset</button>
       </div>
     </section>
 
     <section class="panel results-panel" id="step-panel" hidden>
       <div class="results-head">
-        <h2 id="step-title">Needle 1</h2>
-        <p id="step-meta"></p>
+        <h2 id="step-title" data-i18n="pickStrip">Pick a recipe strip</h2>
+        <p id="step-meta" data-i18n="pickStripMeta">Tap recipe 1–5. You can change anytime.</p>
       </div>
       <p id="design-help" class="design-help" hidden></p>
       <p id="tikli-banner" class="tikli-banner" hidden></p>
-      <div id="locked-summary" class="locked-summary"></div>
-      <div id="needle-options" class="needle-options"></div>
-      <p class="thread-approx-note">Colour dots are approximate</p>
+      <div id="recipe-strips" class="recipe-strips"></div>
+      <div class="colour-options-block">
+        <span class="block-label" data-i18n="sixColours">6 colour options</span>
+        <div id="colour-options" class="paint-colour-row"></div>
+      </div>
+      <div id="picked-thread" class="picked-thread" hidden></div>
+      <p class="thread-approx-note" data-i18n="approxNote">Colour chips follow Royal shade card (screen approx)</p>
       <div class="actions">
-        <button type="button" class="btn ghost" id="back-needle" hidden>Back</button>
+        <button type="button" class="btn primary" id="use-strip" hidden data-i18n="useThis">Use this recipe</button>
       </div>
     </section>
 
     <section class="panel results-panel" id="final-panel" hidden>
       <div class="results-head">
-        <h2>Final recipe</h2>
-        <p>Your chosen dhaga map</p>
+        <h2 data-i18n="finalRecipe">Final recipe</h2>
+        <p data-i18n="yourMap">Your chosen dhaga strip</p>
       </div>
       <div id="final-map" class="final-map"></div>
       <p id="final-tikli" class="tikli-banner" hidden></p>
       <div class="actions">
-        <button type="button" class="btn primary" id="again">Start over</button>
+        <button type="button" class="btn ghost" id="change-strip" data-i18n="changeStrip">Choose another strip</button>
+        <button type="button" class="btn primary" id="again" data-i18n="startOver">Start over</button>
       </div>
     </section>
 
     <p class="foot">Jeetubhai colour helper</p>
   </main>
-  <script src="/static/app.js?v=11"></script>
+  <script src="/static/app.js?v=12"></script>
 </body>
 </html>

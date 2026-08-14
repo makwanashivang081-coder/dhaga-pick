@@ -18,7 +18,10 @@ from services.gallery_service import GalleryIndex  # noqa: E402
 from services.lite_recommender import LiteRecommender  # noqa: E402
 from utils.cloth_palette import cloth_palette  # noqa: E402
 from utils.cloth_vocab import resolve_cloth  # noqa: E402
-from utils.thread_colors import enrich_options_with_thread_colour  # noqa: E402
+from utils.thread_colors import (  # noqa: E402
+    enrich_options_with_thread_colour,
+    enrich_recipe_needles,
+)
 from utils.types import PredictRequest  # noqa: E402
 
 LITE_PATH = ROOT / "models" / "lite_recipes.json"
@@ -27,7 +30,7 @@ GALLERY_JOBLIB = ROOT / "models" / "gallery_index.joblib"
 GALLERY_ROOT = ROOT / "Jeetubhai Images"
 STATIC_DIR = ROOT / "web"
 
-app = FastAPI(title="Dhaga Pick", version="1.3.0")
+app = FastAPI(title="Dhaga Pick", version="1.4.0")
 _model: LiteRecommender | None = None
 _gallery: GalleryIndex | None = None
 
@@ -72,6 +75,16 @@ class NeedleStepBody(BaseModel):
     similar_design_nos: list[str] = Field(default_factory=list)
     locked_needles: dict[str, str] = Field(default_factory=dict)
     target_needle: int = Field(..., ge=1, le=5)
+    has_design_photo: bool = False
+
+
+class RecipesBody(BaseModel):
+    cloth: str = Field(..., min_length=1)
+    cloth_raw: str = ""
+    shade_value: int = Field(default=50, ge=0, le=100)
+    design_no: str = ""
+    thread_count: int = 0
+    similar_design_nos: list[str] = Field(default_factory=list)
     has_design_photo: bool = False
 
 
@@ -180,8 +193,20 @@ def _exact_design_payload(matches: list, model: LiteRecommender) -> dict | None:
         ),
         "past_count": len(history),
         "cloths_used": cloths,
-        "past_recipes": history,
+        "past_recipes": [_with_chips(h) for h in history],
     }
+
+
+def _with_chips(row: dict) -> dict:
+    needles = row.get("needles") or [row.get(f"n{i}", "") for i in range(1, 6)]
+    tikli_n = row.get("tikli_needle")
+    try:
+        tikli_n = int(tikli_n) if tikli_n else None
+    except (TypeError, ValueError):
+        tikli_n = None
+    out = dict(row)
+    out["chips"] = enrich_recipe_needles(list(needles), tikli_n)
+    return out
 
 
 @app.post("/api/gallery/similar")
@@ -239,7 +264,7 @@ def design_history(design_no: str):
         "design_no": dno,
         "past_count": len(history),
         "cloths_used": sorted({h["cloth"] for h in history if h.get("cloth")}),
-        "past_recipes": history,
+        "past_recipes": [_with_chips(h) for h in history],
     }
 
 
@@ -324,6 +349,72 @@ def recommend_needle(body: NeedleStepBody):
         "similar_used": similar_nos,
         "design_no_used": (body.design_no or "").strip(),
         "design_accuracy_boost": help_pct,
+        "tikli": tikli_info,
+    }
+
+
+@app.post("/api/recommend-recipes")
+def recommend_recipes(body: RecipesBody):
+    """Five full dhaga strips + six extra colour chips. Parts (neck etc.) are ignored."""
+    model = get_model()
+    similar_nos = list(body.similar_design_nos or [])
+    known = {r.cloth for r in model.recipes if r.cloth}
+
+    cloth = (body.cloth or "").strip()
+    cloth_info = None
+    raw = (body.cloth_raw or body.cloth or "").strip()
+    if raw:
+        resolved = resolve_cloth(raw, shade_value=body.shade_value, known_cloths=known)
+        if resolved.cloth_id:
+            cloth = resolved.cloth_id
+            cloth_info = {
+                "cloth_id": resolved.cloth_id,
+                "label": resolved.label,
+                "message": resolved.message,
+                "shade": resolved.shade,
+                "understood_as": resolved.understood_as,
+                "hex": resolved.hex,
+                "gujarati": resolved.gujarati,
+            }
+
+    req = PredictRequest(
+        cloth=cloth,
+        design_no=(body.design_no or "").strip(),
+        parts="",
+        thread_count=body.thread_count or 0,
+        similar_design_nos=similar_nos,
+    )
+    recipes, colours = model.recommend_recipes(req, top_n=5, colour_n=6)
+    for rec in recipes:
+        rec["chips"] = enrich_recipe_needles(rec.get("needles") or [], rec.get("tikli_needle"))
+    colours = enrich_options_with_thread_colour(colours)
+    for i, c in enumerate(colours, start=1):
+        c["rank"] = i
+
+    help_pct = model.design_help_percent(req, target_needle=1, locked_needles={}, options_with=None)
+    tikli_info = model.suggest_tikli(req)
+
+    has_photo = bool(body.has_design_photo)
+    has_match = bool(similar_nos or (body.design_no or "").strip())
+    if has_match and help_pct > 0:
+        note = f"Design photo / matched designs improve colour choosing by about {help_pct}%"
+    elif has_photo and not has_match:
+        note = "Design photo uploaded, but no close match in your past designs — cloth colour only (0%)"
+        help_pct = 0
+    elif has_photo and has_match and help_pct == 0:
+        note = "Design matched, but past recipes did not change these picks (low design help)"
+    else:
+        note = "No design photo — suggestions from cloth colour only (0%)"
+
+    return {
+        "count": len(recipes),
+        "recipes": recipes,
+        "colour_options": colours,
+        "cloth": cloth_info or {"cloth_id": cloth, "label": cloth, "message": "", "shade": "mid"},
+        "design_help_percent": help_pct,
+        "design_help_note": note,
+        "similar_used": similar_nos,
+        "design_no_used": (body.design_no or "").strip(),
         "tikli": tikli_info,
     }
 
