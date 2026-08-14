@@ -400,14 +400,11 @@ function clothStripHtml(hex, label, extraClass) {
 
 function dhagaRowHtml(chip, opts) {
   const o = opts || {};
+  if (o.finalSquare) return finalSquareTileHtml(chip, o);
   const clothHex = o.clothHex || state.clothHex || "#128C7E";
   const threadHex = chipHex(chip);
   const num = chip.needle;
-  const labelColor = threadHex ? clothTextOn(threadHex) : "#111b21";
-  const numColor = threadHex ? clothHex : "#111b21";
-  const numShadow = threadHex
-    ? "0 0 4px rgba(255,255,255,0.95),0 0 8px rgba(255,255,255,0.75),0 2px 6px rgba(0,0,0,0.55)"
-    : "none";
+  const textColor = threadHex ? clothTextOn(threadHex) : "#111b21";
   const tikli = chip.is_tikli
     ? `<span class="chip-tikli">${escapeHtml(t("tikliHere"))}</span>`
     : "";
@@ -421,11 +418,33 @@ function dhagaRowHtml(chip, opts) {
   return `
     <div class="dhaga-row${size}${onCloth}${picked}${chip.is_tikli ? " is-tikli" : ""}" data-needle="${num}">
       <div class="dhaga-strip-bar${threadHex ? "" : " approx"}" style="background:${escapeHtml(bg)}">
-        <span class="needle-on-strip" style="color:${escapeHtml(numColor)};text-shadow:${numShadow}">${num}</span>
-        <span class="dhaga-on-strip-label" style="color:${labelColor}">
+        <span class="needle-on-strip">
+          <span class="needle-glow" style="background:${escapeHtml(clothHex)}"></span>
+          <span class="needle-num" style="color:${escapeHtml(textColor)}">${num}</span>
+        </span>
+        <span class="dhaga-on-strip-label" style="color:${escapeHtml(textColor)}">
           <strong>${escapeHtml(String(chip.thread || ""))}</strong>${tikli}
         </span>
       </div>
+    </div>`;
+}
+
+function finalSquareTileHtml(chip, opts) {
+  const clothHex = opts.clothHex || state.clothHex || "#128C7E";
+  const threadHex = chipHex(chip);
+  const num = chip.needle;
+  const textColor = threadHex ? clothTextOn(threadHex) : "#111b21";
+  const bg = threadHex || "#b0b0b0";
+  const tikli = chip.is_tikli ? `<span class="chip-tikli">${escapeHtml(t("tikliHere"))}</span>` : "";
+  return `
+    <div class="final-dhaga-tile${chip.is_tikli ? " is-tikli" : ""}" data-needle="${num}" style="background:${escapeHtml(bg)}">
+      <div class="final-needle-wrap">
+        <span class="final-needle-glow" style="background:${escapeHtml(clothHex)}"></span>
+        <span class="final-needle-num" style="color:${escapeHtml(textColor)}">${num}</span>
+      </div>
+      <span class="final-thread-label" style="color:${escapeHtml(textColor)}">
+        <strong>${escapeHtml(String(chip.thread || ""))}</strong>${tikli}
+      </span>
     </div>`;
 }
 
@@ -1174,7 +1193,7 @@ function showFinal() {
     " · " +
     (rec.rank === "P" ? t("personalisedRecipe") : t("recipe") + " " + rec.rank);
   el.finalDhagaStrips.innerHTML = chips
-    .map((c) => dhagaRowHtml(c, { clothHex: cloth, large: true, onCloth: true }))
+    .map((c) => dhagaRowHtml(c, { clothHex: cloth, finalSquare: true }))
     .join("");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
