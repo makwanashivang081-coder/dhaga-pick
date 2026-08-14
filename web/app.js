@@ -418,10 +418,7 @@ function dhagaRowHtml(chip, opts) {
   return `
     <div class="dhaga-row${size}${onCloth}${picked}${chip.is_tikli ? " is-tikli" : ""}" data-needle="${num}">
       <div class="dhaga-strip-bar${threadHex ? "" : " approx"}" style="background:${escapeHtml(bg)}">
-        <span class="needle-on-strip">
-          <span class="needle-glow" style="background:${escapeHtml(clothHex)}"></span>
-          <span class="needle-num" style="color:${escapeHtml(textColor)}">${num}</span>
-        </span>
+        <span class="needle-on-strip needle-num" style="color:${escapeHtml(clothHex)}">${num}</span>
         <span class="dhaga-on-strip-label" style="color:${escapeHtml(textColor)}">
           <strong>${escapeHtml(String(chip.thread || ""))}</strong>${tikli}
         </span>
@@ -438,10 +435,7 @@ function finalSquareTileHtml(chip, opts) {
   const tikli = chip.is_tikli ? `<span class="chip-tikli">${escapeHtml(t("tikliHere"))}</span>` : "";
   return `
     <div class="final-dhaga-tile${chip.is_tikli ? " is-tikli" : ""}" data-needle="${num}" style="background:${escapeHtml(bg)}">
-      <div class="final-needle-wrap">
-        <span class="final-needle-glow" style="background:${escapeHtml(clothHex)}"></span>
-        <span class="final-needle-num" style="color:${escapeHtml(textColor)}">${num}</span>
-      </div>
+      <span class="final-needle-num" style="color:${escapeHtml(clothHex)}">${num}</span>
       <span class="final-thread-label" style="color:${escapeHtml(textColor)}">
         <strong>${escapeHtml(String(chip.thread || ""))}</strong>${tikli}
       </span>

@@ -1085,26 +1085,13 @@ input, select {
 }
 .needle-on-strip {
   flex: 0 0 auto;
-  position: relative;
-  min-width: 2.4rem;
-  min-height: 2.4rem;
+  min-width: 2rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
-}
-.needle-glow {
-  position: absolute;
-  width: 2.2rem;
-  height: 2.2rem;
-  border-radius: 50%;
-  opacity: 0.88;
-  filter: blur(7px);
-  z-index: 0;
+  padding: 0 0.35rem 0 0.15rem;
 }
 .needle-num {
-  position: relative;
-  z-index: 1;
   font-weight: 900;
   font-size: 1.35rem;
   line-height: 1;
@@ -1130,10 +1117,6 @@ input, select {
   min-height: 4.75rem;
   padding: 0.65rem 1rem 0.65rem 0.85rem;
   border-radius: 14px;
-}
-.dhaga-row-large .needle-glow {
-  width: 2.8rem;
-  height: 2.8rem;
 }
 .dhaga-row-large .needle-num {
   font-size: 2rem;
@@ -1254,26 +1237,7 @@ body.final-mode #main-shell #page-foot {
   text-align: center;
   filter: saturate(1.34) contrast(1.1);
 }
-.final-needle-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 5rem;
-  height: 5rem;
-}
-.final-needle-glow {
-  position: absolute;
-  width: 4.5rem;
-  height: 4.5rem;
-  border-radius: 50%;
-  opacity: 0.92;
-  filter: blur(12px);
-  z-index: 0;
-}
 .final-needle-num {
-  position: relative;
-  z-index: 1;
   font-size: clamp(2.4rem, 10vw, 3.2rem);
   font-weight: 900;
   line-height: 1;
