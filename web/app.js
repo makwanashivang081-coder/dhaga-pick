@@ -170,6 +170,139 @@ function clothTextOn(hex) {
   return lum > 0.62 ? "#111b21" : "#ffffff";
 }
 
+function rgbToHex(c) {
+  return (
+    "#" +
+    [c.r, c.g, c.b]
+      .map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0"))
+      .join("")
+  );
+}
+
+const SPECIAL_THREAD = {
+  jari: "#d4af37",
+  zari: "#d4af37",
+  vw: "#d4af37",
+  bch: "#d4af37",
+  m: "#c0c0c0",
+  md: "#9aa0a6",
+};
+
+let shadeCodes = null;
+
+async function loadShadeCodes() {
+  if (shadeCodes) return shadeCodes;
+  try {
+    const res = await fetch("/api/thread-shades");
+    if (!res.ok) throw new Error("no shades");
+    const data = await res.json();
+    shadeCodes = {};
+    for (const [k, v] of Object.entries(data.codes || {})) {
+      if (v) shadeCodes[String(k).toUpperCase()] = String(v).toLowerCase();
+    }
+  } catch (err) {
+    shadeCodes = {};
+  }
+  return shadeCodes;
+}
+
+function parseThreadLabel(thread) {
+  let s = String(thread || "").trim().replace(/\s+/g, " ");
+  if (!s) return { code: "", mods: "" };
+  const low = s.toLowerCase();
+  const core = low.replace(/\b(royal|raj|thread|dhaga|viscose)\b/g, " ").replace(/\s+/g, " ").trim();
+  let m = core.match(/^([a-z]+)\b/);
+  if (m && !/\d/.test(m[1])) return { code: m[1], mods: core.slice(m[0].length).trim() };
+  m = core.match(/^(\d+)\s*([a-z]*)/);
+  if (!m) return { code: core, mods: "" };
+  return { code: m[1], mods: (m[2] || "").toLowerCase() };
+}
+
+function modifierKeys(code, mods) {
+  mods = (mods || "").replace(/[^a-z]/g, "");
+  const keys = [];
+  for (const token of ["ll", "dd", "nl", "nd", "st", "dr", "lr"]) {
+    if (mods.includes(token)) keys.push(code + "." + token.toUpperCase());
+  }
+  for (const token of ["l", "d", "n", "s", "b", "f", "r", "t", "p", "u", "c"]) {
+    if (new RegExp("(^|[^a-z])" + token + "([^a-z]|$)").test(mods) || mods.endsWith(token)) {
+      keys.push(code + "." + token.toUpperCase());
+    }
+  }
+  keys.push(code);
+  const seen = new Set();
+  return keys.filter((k) => {
+    const ku = k.toUpperCase();
+    if (seen.has(ku)) return false;
+    seen.add(ku);
+    return true;
+  });
+}
+
+function applyModifiers(hex, mods) {
+  mods = (mods || "").toLowerCase();
+  let factor = 1;
+  if (mods.includes("ll")) factor = 1.28;
+  else if (/l/.test(mods) || mods.includes("nl")) factor = 1.16;
+  else if (mods.includes("dd")) factor = 0.55;
+  else if (/d/.test(mods)) factor = 0.78;
+  if (Math.abs(factor - 1) < 0.01) return hex;
+  const c = parseHex(hex);
+  if (factor > 1) {
+    const t = Math.min(1, factor - 1);
+    return rgbToHex({
+      r: c.r + (255 - c.r) * t,
+      g: c.g + (255 - c.g) * t,
+      b: c.b + (255 - c.b) * t,
+    });
+  }
+  return rgbToHex({ r: c.r * factor, g: c.g * factor, b: c.b * factor });
+}
+
+function lookupThreadHex(thread) {
+  const s = String(thread || "").trim();
+  if (!s) return "";
+  const low = s.toLowerCase();
+  if (low.includes("jari") || low.includes("zari")) return SPECIAL_THREAD.jari;
+  const { code, mods } = parseThreadLabel(s);
+  if (!code) return "";
+  if (SPECIAL_THREAD[code] && !/^\d+$/.test(code)) return SPECIAL_THREAD[code];
+  const codes = shadeCodes || {};
+  for (const key of modifierKeys(code, mods)) {
+    const ku = key.toUpperCase();
+    if (codes[ku]) return key.includes(".") ? codes[ku] : applyModifiers(codes[ku], mods);
+  }
+  return "";
+}
+
+function chipHex(chip) {
+  return (chip && (chip.thread_hex || lookupThreadHex(chip.thread))) || "";
+}
+
+async function enrichChipsHex(chips) {
+  await loadShadeCodes();
+  for (const c of chips || []) {
+    if (!c.thread_hex) {
+      const hx = lookupThreadHex(c.thread);
+      if (hx) c.thread_hex = hx;
+    }
+  }
+  return chips;
+}
+
+async function enrichRecipesData() {
+  await loadShadeCodes();
+  for (const rec of state.recipes || []) {
+    await enrichChipsHex(rec.chips);
+  }
+  for (const opt of state.colourOptions || []) {
+    if (!opt.thread_hex) {
+      const hx = lookupThreadHex(opt.thread);
+      if (hx) opt.thread_hex = hx;
+    }
+  }
+}
+
 function swatchHex(btn) {
   if (!btn) return "#888888";
   const fromData = btn.getAttribute("data-hex");
@@ -225,19 +358,23 @@ function clothStripHtml(hex, label, extraClass) {
 function dhagaRowHtml(chip, opts) {
   const o = opts || {};
   const clothHex = o.clothHex || state.clothHex || "#128C7E";
-  const threadHex = chip.thread_hex || "";
+  const threadHex = chipHex(chip);
   const num = chip.needle;
   const numColor = clothTextOn(clothHex);
-  const fillStyle = threadHex ? `background:${escapeHtml(threadHex)}` : "";
-  const unk = threadHex ? "" : " unknown";
-  const tikli = chip.is_tikli ? `<em class="chip-tikli">${escapeHtml(t("tikliHere"))}</em>` : "";
+  const labelColor = threadHex ? clothTextOn(threadHex) : "#111b21";
+  const tikli = chip.is_tikli
+    ? `<span class="chip-tikli">${escapeHtml(t("tikliHere"))}</span>`
+    : "";
   const size = o.large ? " dhaga-row-large" : "";
+  const onCloth = o.onCloth ? " on-cloth" : "";
+  const bg = threadHex || "#c8c8c8";
   return `
-    <div class="dhaga-row${size}${chip.is_tikli ? " is-tikli" : ""}">
-      <span class="needle-badge" style="background:${escapeHtml(clothHex)};color:${numColor}">${num}</span>
-      <div class="dhaga-strip-wrap">
-        <span class="dhaga-strip-bar${unk}" style="${fillStyle}"></span>
-        <span class="dhaga-strip-name">${escapeHtml(chip.thread || "")}${tikli ? " · " + escapeHtml(t("tikliHere")) : ""}</span>
+    <div class="dhaga-row${size}${onCloth}${chip.is_tikli ? " is-tikli" : ""}">
+      <div class="dhaga-strip-bar${threadHex ? "" : " unknown"}" style="background:${escapeHtml(bg)}">
+        <span class="needle-on-strip" style="background:${escapeHtml(clothHex)};color:${numColor}">${num}</span>
+        <span class="dhaga-on-strip-label" style="color:${labelColor}">
+          <strong>${escapeHtml(String(chip.thread || ""))}</strong>${tikli}
+        </span>
       </div>
     </div>`;
 }
@@ -627,6 +764,10 @@ function resetStripFlow() {
   state.pickedHex = "";
   el.finalCanvas.hidden = true;
   document.body.classList.remove("final-mode");
+  document.body.style.background = "";
+  document.body.style.removeProperty("--final-cloth");
+  if (el.pageBg) el.pageBg.style.display = "";
+  el.mainShell.hidden = false;
   const formPanel = el.mainShell.querySelector("#form-panel");
   if (formPanel) formPanel.hidden = false;
   el.stepPanel.hidden = true;
@@ -663,6 +804,10 @@ async function loadRecipes() {
   el.stepPanel.hidden = false;
   el.finalCanvas.hidden = true;
   document.body.classList.remove("final-mode");
+  document.body.style.background = "";
+  document.body.style.removeProperty("--final-cloth");
+  if (el.pageBg) el.pageBg.style.display = "";
+  el.mainShell.hidden = false;
   el.resetPicks.hidden = false;
   el.recipeStrips.innerHTML = '<p class="meta">' + escapeHtml(t("loading")) + "</p>";
 
@@ -692,6 +837,7 @@ async function loadRecipes() {
     showTikli(data.tikli || null);
     state.recipes = data.recipes || [];
     state.colourOptions = data.colour_options || [];
+    await enrichRecipesData();
     if (!state.selectedRank && state.recipes.length) state.selectedRank = 1;
     renderRecipeStrips();
     renderColourOptions();
@@ -746,7 +892,7 @@ function renderRecipeStrips() {
     const rec0 = selectedRecipe();
     if (rec0 && rec0.chips && rec0.chips[0]) {
       state.pickedThread = rec0.chips[0].thread || "";
-      state.pickedHex = rec0.chips[0].thread_hex || "";
+      state.pickedHex = chipHex(rec0.chips[0]) || "";
     }
   }
   el.recipeStrips.innerHTML = state.recipes
@@ -779,9 +925,9 @@ function renderRecipeStrips() {
     row.addEventListener("click", (ev) => {
       ev.stopPropagation();
       const wrap = row.closest(".recipe-strip-card");
-      const nameEl = row.querySelector(".dhaga-strip-name");
+      const nameEl = row.querySelector(".dhaga-on-strip-label strong");
       const bar = row.querySelector(".dhaga-strip-bar");
-      state.pickedThread = nameEl ? nameEl.textContent.split(" · ")[0] : "";
+      state.pickedThread = nameEl ? nameEl.textContent.trim() : "";
       state.pickedHex = bar && bar.style.background ? bar.style.background : "";
       if (wrap) state.selectedRank = Number(wrap.getAttribute("data-rank") || state.selectedRank);
       renderRecipeStrips();
@@ -806,8 +952,9 @@ function renderColourOptions() {
         thread_hex: opt.thread_hex || "",
         is_tikli: false,
       };
+      const hx = chipHex(chip);
       const on = (opt.thread || "") === state.pickedThread ? " selected" : "";
-      return `<button type="button" class="colour-opt-btn${on}" data-thread="${escapeHtml(opt.thread || "")}" data-hex="${escapeHtml(opt.thread_hex || "")}">${dhagaRowHtml(chip, { clothHex: state.clothHex })}</button>`;
+      return `<button type="button" class="colour-opt-btn${on}" data-thread="${escapeHtml(opt.thread || "")}" data-hex="${escapeHtml(hx)}">${dhagaRowHtml(chip, { clothHex: state.clothHex })}</button>`;
     })
     .join("");
   el.colourOptions.querySelectorAll(".colour-opt-btn").forEach((btn) => {
@@ -838,25 +985,30 @@ function showSelectedThreadPreview() {
   const rec = selectedRecipe();
   if (!rec || !rec.chips || !rec.chips.length) return;
   const first = rec.chips[0];
-  showPickedThread(first.thread, first.thread_hex || "");
+  showPickedThread(first.thread, chipHex(first) || "");
 }
 
 function showFinal() {
   const rec = selectedRecipe();
   if (!rec) return;
   const chips = (rec.chips || []).slice(0, state.maxNeedles);
+  const cloth = state.clothHex || "#128C7E";
   el.stepPanel.hidden = true;
-  el.mainShell.querySelector("#form-panel").hidden = true;
+  el.mainShell.hidden = true;
   document.body.classList.add("final-mode");
+  document.body.style.setProperty("--final-cloth", cloth);
+  document.body.style.background = cloth;
+  if (el.pageBg) el.pageBg.style.display = "none";
   el.finalCanvas.hidden = false;
-  el.finalCanvasBg.style.background = state.clothHex || "#128C7E";
+  el.finalCanvasBg.style.background = cloth;
   el.finalClothName.textContent = clothDisplayName() + " · " + t("recipe") + " " + rec.rank;
   el.finalDhagaStrips.innerHTML = chips
-    .map((c) => dhagaRowHtml(c, { clothHex: state.clothHex, large: true }))
+    .map((c) => dhagaRowHtml(c, { clothHex: cloth, large: true, onCloth: true }))
     .join("");
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+loadShadeCodes();
 applyStrings();
 bindSwatches();
 updateStartButton();
@@ -898,12 +1050,14 @@ el.useStrip.addEventListener("click", showFinal);
 el.changeStrip.addEventListener("click", () => {
   el.finalCanvas.hidden = true;
   document.body.classList.remove("final-mode");
-  el.mainShell.querySelector("#form-panel").hidden = false;
+  document.body.style.background = "";
+  document.body.style.removeProperty("--final-cloth");
+  if (el.pageBg) el.pageBg.style.display = "";
+  el.mainShell.hidden = false;
   el.stepPanel.hidden = false;
   el.stepPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 el.again.addEventListener("click", () => {
   resetStripFlow();
-  el.mainShell.querySelector("#form-panel").hidden = false;
   window.scrollTo({ top: 0, behavior: "smooth" });
 });

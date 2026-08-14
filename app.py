@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import io
+import json
 import sys
 from pathlib import Path
 
@@ -117,6 +118,19 @@ def health():
         "cloth_swatches": cloth_palette(cloths),
         "gallery_images": len(gallery.items) if gallery else 0,
     }
+
+
+@app.get("/api/thread-shades")
+def api_thread_shades():
+    """Royal/Raj shade-card hex map for dhaga strip colours."""
+    path = ROOT / "models" / "thread_shade_hex.json"
+    if not path.exists():
+        return {"codes": {}}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"codes": {}}
+    return {"codes": data.get("codes") or {}}
 
 
 def _sample_cloth_rgb(img: Image.Image) -> tuple[int, int, int]:

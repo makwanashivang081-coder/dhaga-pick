@@ -1061,64 +1061,80 @@ input, select {
 .approval-actions .btn { flex: 1 1 auto; min-width: 0; }
 .meta.bad { color: #c0392b; font-weight: 700; }
 
-/* —— Dhaga row: needle # in cloth colour, strip = thread colour —— */
+/* —— Dhaga row: number + name ON the coloured strip —— */
 .dhaga-row {
-  display: flex;
-  align-items: stretch;
-  gap: 0.55rem;
   width: 100%;
 }
-.needle-badge {
+.dhaga-strip-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.65rem 0.35rem 0.35rem;
+  border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.1);
+  filter: saturate(1.28) contrast(1.08);
+}
+.dhaga-strip-bar.unknown {
+  background: repeating-linear-gradient(45deg, #eee, #eee 6px, #ddd 6px, #ddd 12px) !important;
+}
+.needle-on-strip {
   flex: 0 0 auto;
-  width: 2.4rem;
-  min-height: 2.4rem;
+  width: 2.5rem;
+  height: 2.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  font-weight: 900;
-  font-size: 1.05rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-.dhaga-strip-wrap {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  min-width: 0;
-}
-.dhaga-strip-bar {
-  display: block;
-  height: 2.4rem;
   border-radius: 8px;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
-  filter: saturate(1.2) contrast(1.05);
+  font-weight: 900;
+  font-size: 1.15rem;
+  line-height: 1;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.22);
 }
-.dhaga-strip-bar.unknown {
-  background: repeating-linear-gradient(45deg, #eee, #eee 6px, #ddd 6px, #ddd 12px);
-}
-.dhaga-strip-name {
-  font-size: 0.78rem;
+.dhaga-on-strip-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.82rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.25;
   word-break: break-word;
 }
-.dhaga-row-large .needle-badge {
-  width: 3rem;
-  min-height: 3rem;
-  font-size: 1.35rem;
+.dhaga-on-strip-label strong { font-weight: 900; }
+.chip-tikli {
+  display: inline;
+  margin-left: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  font-style: normal;
+  opacity: 0.92;
+}
+.dhaga-row-large .dhaga-strip-bar {
+  min-height: 3.6rem;
+  padding: 0.45rem 0.8rem 0.45rem 0.45rem;
   border-radius: 12px;
 }
-.dhaga-row-large .dhaga-strip-bar { height: 3rem; border-radius: 10px; }
-.dhaga-row-large .dhaga-strip-name { font-size: 0.95rem; }
+.dhaga-row-large .needle-on-strip {
+  width: 3.25rem;
+  height: 3.25rem;
+  font-size: 1.55rem;
+  border-radius: 10px;
+}
+.dhaga-row-large .dhaga-on-strip-label { font-size: 1.02rem; }
+.dhaga-row.on-cloth .dhaga-strip-bar {
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.22), 0 8px 24px rgba(0,0,0,0.28);
+}
+.dhaga-row.on-cloth .dhaga-on-strip-label {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
 
 .paint-strip {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
 }
-.paint-strip.compact .dhaga-strip-bar { height: 1.6rem; }
-.paint-strip.compact .needle-badge { width: 1.8rem; min-height: 1.8rem; font-size: 0.85rem; }
+.paint-strip.compact .dhaga-strip-bar { min-height: 2rem; padding: 0.25rem 0.45rem 0.25rem 0.25rem; }
+.paint-strip.compact .needle-on-strip { width: 2rem; height: 2rem; font-size: 0.95rem; }
 
 .colour-opt-btn {
   appearance: none;
@@ -1198,10 +1214,10 @@ body.final-mode #main-shell #page-foot {
   margin-top: 0.5rem;
 }
 .final-dhaga-strips .dhaga-row {
-  background: rgba(255,255,255,0.94);
-  border-radius: 14px;
-  padding: 0.65rem 0.7rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
 }
 .final-tikli {
   background: rgba(255,255,255,0.92) !important;
