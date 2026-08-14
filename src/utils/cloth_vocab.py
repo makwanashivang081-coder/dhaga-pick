@@ -616,6 +616,60 @@ def resolve_cloth(
     )
 
 
+def _hex_to_rgb(hex_c: str) -> tuple[int, int, int]:
+    h = (hex_c or "#888888").lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    n = int(h[:6], 16)
+    return (n >> 16) & 255, (n >> 8) & 255, n & 255
+
+
+def _rgb_dist(a: tuple[int, int, int], b: tuple[int, int, int]) -> float:
+    return sum((a[i] - b[i]) ** 2 for i in range(3)) ** 0.5
+
+
+def nearest_cloth_from_rgb(
+    r: int,
+    g: int,
+    b: int,
+    known_cloths: Optional[set[str]] = None,
+) -> ClothResolve:
+    """Map a sampled photo RGB to the closest palette cloth."""
+    target = (max(0, min(255, int(r))), max(0, min(255, int(g))), max(0, min(255, int(b))))
+    known = known_cloths or set()
+    keys = [k for k in CANONICAL if not known or k in known]
+    if not keys:
+        keys = list(CANONICAL.keys())
+    best_key = keys[0]
+    best_d = 1e9
+    for key in keys:
+        hx = CANONICAL[key].get("hex") or "#bbb"
+        d = _rgb_dist(target, _hex_to_rgb(hx))
+        if d < best_d:
+            best_d = d
+            best_key = key
+    meta = CANONICAL[best_key]
+    sampled = "#{:02x}{:02x}{:02x}".format(*target)
+    conf = max(0.0, min(1.0, 1.0 - best_d / 441.0))
+    gu = meta.get("gu") or ""
+    label = meta["label"]
+    message = f"From photo we guess {label}"
+    if gu:
+        message += f" ({gu})"
+    return ClothResolve(
+        input_text=f"photo:{sampled}",
+        cloth_id=best_key,
+        label=label,
+        hex=meta["hex"],
+        gujarati=gu,
+        shade="mid",
+        shade_value=50,
+        confidence=round(conf, 2),
+        message=message,
+        understood_as=label,
+    )
+
+
 def normalize_cloth_value(value: str) -> str:
     """Backward-compatible normalizer for load/train paths."""
     r = resolve_cloth(value, shade_value=50)

@@ -1,112 +1,65 @@
-const LANG_KEY = "dhaga_pick_lang";
-
-const I18N = {
-  en: {
-    heroTitle: "Pick cloth, then pick a dhaga strip",
-    heroSub: "Tap a bold colour. Optionally add a design photo. Then choose one of 5 recipe strips.",
-    stepCloth: "1 · Cloth colour — tap one",
-    tapColour: "Tap a colour above",
-    shadeAsk: "How light / dark is this cloth?",
-    lighter: "Lighter",
-    normal: "Normal",
-    darker: "Darker",
-    slideShade: "Slide for lighter or darker shade",
-    orType: "Or type the colour (if not in the list)",
-    typeColour: "Type here: phone, gulabi, lilo, પીળો…",
-    stepPhoto: "2 · Design photo (optional)",
-    choosePhoto: "Choose from my gallery",
-    clearPhoto: "Clear photo",
-    similarPast: "Similar past designs",
-    alsoSimilar: "Also similar designs",
-    totalNeedles: "Total needles",
-    showStrips: "Show 5 recipe strips",
-    resetPicks: "Reset",
-    pickStrip: "Pick a recipe strip",
-    pickStripMeta: "Tap recipe 1–5. You can change anytime.",
-    sixColours: "6 colour options",
-    approxNote: "Colour chips follow Royal shade card (screen approx)",
-    useThis: "Use this recipe",
-    finalRecipe: "Final recipe",
-    yourMap: "Your chosen dhaga strip",
-    changeStrip: "Choose another strip",
-    startOver: "Start over",
-    selected: "Selected",
-    pleaseCloth: "Please tap a cloth colour or type one",
-    loading: "Loading strips…",
-    noRecipes: "No recipes found. Try another cloth.",
-    serverDown: "Could not load recipes. Is the server running?",
-    photoSelected: "Design photo selected",
-    recipe: "Recipe",
-    best: "Best",
-    needle: "N",
-    tikliHere: "Tikli",
-    colourPicked: "Thread colour",
-    clothPalette: "Chosen cloth palette",
-    pastNone: "No needle history in the colour book for this design yet.",
-    noNeedles: "No needles",
-    nowSlide: "Now slide for lighter or darker",
-    using: "Using",
-  },
-  gu: {
-    heroTitle: "કપડાનો રંગ પસંદ કરો, પછી ધાગાની પટ્ટી",
-    heroSub: "બોલ્ડ રંગ દબાવો. ફોટો ઐચ્છિક છે. પછી 5 પટ્ટીઓમાંથી એક પસંદ કરો.",
-    stepCloth: "1 · કપડાનો રંગ — એક દબાવો",
-    tapColour: "ઉપરથી રંગ દબાવો",
-    shadeAsk: "આ કપડું આછું છે કે ઘેરું?",
-    lighter: "આછું",
-    normal: "સામાન્ય",
-    darker: "ઘેરું",
-    slideShade: "આછા / ઘેરા માટે સ્લાઇડ કરો",
-    orType: "અથવા રંગ લખો (યાદીમાં ન હોય તો)",
-    typeColour: "અહીં લખો: phone, gulabi, lilo, પીળો…",
-    stepPhoto: "2 · ડિઝાઇન ફોટો (ઐચ્છિક)",
-    choosePhoto: "ગેલેરીમાંથી પસંદ કરો",
-    clearPhoto: "ફોટો કાઢો",
-    similarPast: "મળતી જૂની ડિઝાઇન",
-    alsoSimilar: "અન્ય મળતી ડિઝાઇન",
-    totalNeedles: "કુલ સોય",
-    showStrips: "5 પટ્ટીઓ બતાવો",
-    resetPicks: "રીસેટ",
-    pickStrip: "ધાગાની પટ્ટી પસંદ કરો",
-    pickStripMeta: "રેસિપી 1–5 દબાવો. ગમે ત્યારે બદલી શકો.",
-    sixColours: "6 રંગ વિકલ્પ",
-    approxNote: "રંગ શેડ કાર્ડ પ્રમાણે (સ્ક્રીન અંદાજ)",
-    useThis: "આ રેસિપી વાપરો",
-    finalRecipe: "અંતિમ રેસિપી",
-    yourMap: "તમારી પસંદ કરેલી ધાગા પટ્ટી",
-    changeStrip: "બીજી પટ્ટી પસંદ કરો",
-    startOver: "ફરી શરૂ",
-    selected: "પસંદ",
-    pleaseCloth: "કૃપા કરી કપડાનો રંગ દબાવો અથવા લખો",
-    loading: "પટ્ટીઓ લાવી રહ્યા છીએ…",
-    noRecipes: "રેસિપી ન મળી. બીજો રંગ અજમાવો.",
-    serverDown: "રેસિપી ન લાગી. સર્વર ચાલુ છે?",
-    photoSelected: "ડિઝાઇન ફોટો પસંદ થયો",
-    recipe: "રેસિપી",
-    best: "શ્રેષ્ઠ",
-    needle: "સોય",
-    tikliHere: "ટિકલી",
-    colourPicked: "ધાગાનો રંગ",
-    clothPalette: "પસંદ કરેલા કપડાની પેલેટ",
-    pastNone: "આ ડિઝાઇન માટે હજુ કલર બુકમાં સોય નથી.",
-    noNeedles: "સોય નથી",
-    nowSlide: "હવે આછા / ઘેરા માટે સ્લાઇડ કરો",
-    using: "વાપરી રહ્યા છીએ",
-  },
+const STR = {
+  heroTitle: "Photo of cloth → pick dhaga strip",
+  heroSub: "Tap a cloth photo. We guess the colour — you approve. Then pick one of 5 recipe strips.",
+  stepClothPhoto: "1 · Cloth photo",
+  pickClothPhoto: "Tap cloth photo",
+  guessAsk: "We think your cloth is:",
+  approveCloth: "Yes, correct",
+  rejectCloth: "Pick different colour",
+  detecting: "Reading cloth colour from photo…",
+  detectFail: "Could not read photo — tap a colour below",
+  stepClothManual: "Or tap cloth colour",
+  orType: "Or type the colour",
+  typeColour: "Type: phone, gulabi, lilo, yellow…",
+  stepDesignPhoto: "2 · Design photo (optional)",
+  chooseDesignPhoto: "Choose design photo",
+  clearPhoto: "Clear photo",
+  similarPast: "Similar past designs",
+  alsoSimilar: "Also similar designs",
+  totalNeedles: "Total needles",
+  showStrips: "Show 5 recipe strips",
+  resetPicks: "Reset",
+  pickStrip: "Pick a recipe strip",
+  pickStripMeta: "Tap recipe 1–5. Needle number = cloth colour, strip = dhaga colour.",
+  sixColours: "6 colour options",
+  approxNote: "Colour strips follow Royal shade card (screen approx)",
+  useThis: "Use this recipe",
+  finalRecipe: "Final recipe",
+  changeStrip: "Choose another strip",
+  startOver: "Start over",
+  selected: "Selected",
+  pleaseCloth: "Please approve cloth colour from photo or tap one",
+  loading: "Loading strips…",
+  noRecipes: "No recipes found. Try another cloth.",
+  serverDown: "Could not load recipes. Is the server running?",
+  photoSelected: "Design photo selected",
+  recipe: "Recipe",
+  best: "Best",
+  needle: "N",
+  tikliHere: "Tikli",
+  colourPicked: "Thread colour",
+  pastNone: "No needle history in the colour book for this design yet.",
+  noNeedles: "No needles",
+  using: "Using",
+  approveFirst: "Approve cloth colour first",
+  sampledFromPhoto: "Sampled from your photo",
+  matchedPalette: "Matched to palette",
 };
 
 const state = {
-  lang: "en",
   cloth: "",
   clothRaw: "",
   clothHex: "#128C7E",
   clothLabel: "",
-  shadeValue: 50,
+  sampledHex: "",
+  clothApproved: false,
+  clothPhotoFile: null,
+  clothPhotoUrl: "",
   exactDesignNo: "",
   similarDesignNos: [],
   hasDesignPhoto: false,
+  designPhotoFile: null,
   tikliNeedle: 0,
-  uploadFile: null,
   maxNeedles: 3,
   recipes: [],
   colourOptions: [],
@@ -117,21 +70,26 @@ const state = {
 };
 
 const el = {
+  pageBg: document.getElementById("page-bg"),
+  mainShell: document.getElementById("main-shell"),
   swatches: document.getElementById("cloth-swatches"),
   clothPicked: document.getElementById("cloth-picked"),
   clothText: document.getElementById("cloth-text"),
-  chosenStrip: document.getElementById("chosen-cloth-strip"),
-  chosenLabel: document.getElementById("chosen-cloth-label"),
-  shadePanel: document.getElementById("shade-panel"),
-  shadeColourName: document.getElementById("shade-colour-name"),
-  shadeBar: document.getElementById("shade-bar"),
-  shadeMidLabel: document.getElementById("shade-mid-label"),
-  clothVerify: document.getElementById("cloth-verify"),
+  manualClothBlock: document.getElementById("manual-cloth-block"),
+  openClothPhoto: document.getElementById("open-cloth-photo"),
+  clothPhotoUpload: document.getElementById("cloth-photo-upload"),
+  clothPhotoPreview: document.getElementById("cloth-photo-preview"),
+  clothApproval: document.getElementById("cloth-approval"),
+  clothGuessStrip: document.getElementById("cloth-guess-strip"),
+  clothGuessLabel: document.getElementById("cloth-guess-label"),
+  clothGuessMeta: document.getElementById("cloth-guess-meta"),
+  approveCloth: document.getElementById("approve-cloth"),
+  rejectCloth: document.getElementById("reject-cloth"),
   threads: document.getElementById("threads"),
-  openGallery: document.getElementById("open-gallery"),
-  galleryUpload: document.getElementById("gallery-upload"),
-  galleryClear: document.getElementById("gallery-clear"),
-  gallerySelected: document.getElementById("gallery-selected"),
+  openDesignPhoto: document.getElementById("open-design-photo"),
+  designPhotoUpload: document.getElementById("design-photo-upload"),
+  designClear: document.getElementById("design-clear"),
+  designSelected: document.getElementById("design-selected"),
   exactDesign: document.getElementById("exact-design"),
   exactTitle: document.getElementById("exact-title"),
   exactMeta: document.getElementById("exact-meta"),
@@ -141,61 +99,34 @@ const el = {
   start: document.getElementById("start"),
   resetPicks: document.getElementById("reset-picks"),
   stepPanel: document.getElementById("step-panel"),
-  stepTitle: document.getElementById("step-title"),
-  stepMeta: document.getElementById("step-meta"),
   designHelp: document.getElementById("design-help"),
   tikliBanner: document.getElementById("tikli-banner"),
-  finalTikli: document.getElementById("final-tikli"),
   recipeStrips: document.getElementById("recipe-strips"),
   colourOptions: document.getElementById("colour-options"),
   pickedThread: document.getElementById("picked-thread"),
   useStrip: document.getElementById("use-strip"),
+  finalCanvas: document.getElementById("final-canvas"),
+  finalCanvasBg: document.getElementById("final-canvas-bg"),
+  finalClothName: document.getElementById("final-cloth-name"),
+  finalDhagaStrips: document.getElementById("final-dhaga-strips"),
+  finalTikli: document.getElementById("final-tikli"),
   changeStrip: document.getElementById("change-strip"),
-  finalPanel: document.getElementById("final-panel"),
-  finalMap: document.getElementById("final-map"),
   again: document.getElementById("again"),
 };
 
 function t(key) {
-  const pack = I18N[state.lang] || I18N.en;
-  return pack[key] || I18N.en[key] || key;
+  return STR[key] || key;
 }
 
-function applyLang(lang) {
-  state.lang = lang === "gu" ? "gu" : "en";
-  try {
-    localStorage.setItem(LANG_KEY, state.lang);
-  } catch (err) {
-    /* ignore */
-  }
-  document.documentElement.lang = state.lang === "gu" ? "gu" : "en";
-  document.body.classList.toggle("lang-gu", state.lang === "gu");
-  document.querySelectorAll(".lang-btn").forEach((btn) => {
-    btn.classList.toggle("active", btn.getAttribute("data-lang") === state.lang);
-  });
+function applyStrings() {
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const key = node.getAttribute("data-i18n");
-    if (!key) return;
-    node.textContent = t(key);
+    if (key) node.textContent = t(key);
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
     const key = node.getAttribute("data-i18n-placeholder");
     if (key) node.setAttribute("placeholder", t(key));
   });
-  if (el.shadeMidLabel) el.shadeMidLabel.textContent = shadeWord(state.shadeValue);
-  if (state.clothLabel && el.chosenLabel) {
-    el.chosenLabel.textContent = t("clothPalette") + " · " + clothDisplayName();
-  }
-}
-
-function loadSavedLang() {
-  let lang = "en";
-  try {
-    lang = localStorage.getItem(LANG_KEY) || "en";
-  } catch (err) {
-    lang = "en";
-  }
-  applyLang(lang);
 }
 
 function escapeHtml(s) {
@@ -204,16 +135,6 @@ function escapeHtml(s) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
-}
-
-function shadeWord(v) {
-  if (v <= 33) return t("lighter");
-  if (v >= 67) return t("darker");
-  return t("normal");
-}
-
-function updateShadeLabel() {
-  if (el.shadeMidLabel) el.shadeMidLabel.textContent = shadeWord(state.shadeValue);
 }
 
 function parseHex(hex) {
@@ -229,74 +150,24 @@ function parseHex(hex) {
   return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
 }
 
-function mixRgb(a, b, tAmt) {
-  return {
-    r: Math.round(a.r + (b.r - a.r) * tAmt),
-    g: Math.round(a.g + (b.g - a.g) * tAmt),
-    b: Math.round(a.b + (b.b - a.b) * tAmt),
-  };
-}
-
 function rgbCss(c) {
+  if (typeof c === "string") return c;
   return "rgb(" + c.r + "," + c.g + "," + c.b + ")";
 }
 
-function setShadeBarGradient(hex) {
-  if (!el.shadeBar) return;
-  const mid = parseHex(hex || "#128C7E");
-  const light = mixRgb(mid, { r: 255, g: 252, b: 240 }, 0.78);
-  const lightMid = mixRgb(mid, { r: 255, g: 252, b: 240 }, 0.38);
-  const darkMid = mixRgb(mid, { r: 18, g: 12, b: 8 }, 0.32);
-  const dark = mixRgb(mid, { r: 18, g: 12, b: 8 }, 0.62);
-  el.shadeBar.style.background =
-    "linear-gradient(90deg, " +
-    rgbCss(light) +
-    " 0%, " +
-    rgbCss(lightMid) +
-    " 25%, " +
-    rgbCss(mid) +
-    " 50%, " +
-    rgbCss(darkMid) +
-    " 75%, " +
-    rgbCss(dark) +
-    " 100%)";
-  paintClothPalette(hex);
+function hexFromRgb(r, g, b) {
+  return (
+    "#" +
+    [r, g, b]
+      .map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0"))
+      .join("")
+  );
 }
 
-function paintClothPalette(hex) {
-  if (!el.chosenStrip) return;
-  const mid = parseHex(hex || state.clothHex || "#128C7E");
-  const light = mixRgb(mid, { r: 255, g: 250, b: 240 }, 0.55);
-  const dark = mixRgb(mid, { r: 20, g: 14, b: 10 }, 0.48);
-  const chips = el.chosenStrip.querySelectorAll(".paint-cloth-chip");
-  if (chips[0]) chips[0].style.background = rgbCss(light);
-  if (chips[1]) chips[1].style.background = rgbCss(mid);
-  if (chips[2]) chips[2].style.background = rgbCss(dark);
-}
-
-function clothDisplayName() {
-  if (state.lang === "gu") {
-    const btn = el.swatches.querySelector(".swatch.selected");
-    const gu = btn && btn.getAttribute("data-gu");
-    if (gu) return gu;
-  }
-  return state.clothLabel || state.cloth || "";
-}
-
-function showShadePanel(label, hex) {
-  if (!el.shadePanel) return;
-  el.shadePanel.hidden = false;
-  state.clothHex = hex || state.clothHex;
-  state.clothLabel = label || state.clothLabel;
-  if (el.shadeColourName) el.shadeColourName.textContent = clothDisplayName() || label || "Colour";
-  setShadeBarGradient(hex || "#888");
-  updateShadeLabel();
-  if (el.chosenStrip) {
-    el.chosenStrip.hidden = false;
-    if (el.chosenLabel) {
-      el.chosenLabel.textContent = t("clothPalette") + " · " + (clothDisplayName() || label || "");
-    }
-  }
+function clothTextOn(hex) {
+  const { r, g, b } = parseHex(hex);
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return lum > 0.62 ? "#111b21" : "#ffffff";
 }
 
 function swatchHex(btn) {
@@ -308,35 +179,222 @@ function swatchHex(btn) {
   return "#888888";
 }
 
-function markSwatchSelected(id, label, animate) {
-  const buttons = el.swatches.querySelectorAll(".swatch");
+function clothDisplayName() {
+  return state.clothLabel || state.cloth || "";
+}
+
+function updateStartButton() {
+  if (!el.start) return;
+  el.start.disabled = !state.clothApproved || !state.cloth;
+}
+
+function markSwatchSelected(id, label) {
   let hex = "#888888";
-  let found = false;
-  buttons.forEach((b) => {
+  el.swatches.querySelectorAll(".swatch").forEach((b) => {
     const match = (b.getAttribute("data-id") || "") === id;
     b.classList.toggle("selected", match);
-    if (match) {
-      found = true;
-      hex = swatchHex(b);
-      if (animate) {
-        b.classList.add("pop");
-        setTimeout(() => b.classList.remove("pop"), 280);
-      }
+    if (match) hex = swatchHex(b);
+  });
+  el.swatches.classList.toggle("has-selection", Boolean(id));
+  return hex;
+}
+
+function setCloth(id, label, hex, approved) {
+  state.cloth = id;
+  state.clothLabel = label || id;
+  state.clothHex = hex || state.clothHex;
+  state.clothApproved = approved !== false;
+  markSwatchSelected(id, label);
+  updateStartButton();
+  if (el.clothPicked && state.clothApproved) {
+    el.clothPicked.hidden = false;
+    el.clothPicked.textContent = t("selected") + ": " + clothDisplayName();
+    el.clothPicked.style.color = "#075E54";
+  }
+}
+
+function clothStripHtml(hex, label, extraClass) {
+  const h = hex || "#888";
+  return `
+    <div class="cloth-strip-preview ${extraClass || ""}">
+      <span class="cloth-strip-bar" style="background:${escapeHtml(h)}"></span>
+      ${label ? `<span class="cloth-strip-caption">${escapeHtml(label)}</span>` : ""}
+    </div>`;
+}
+
+function dhagaRowHtml(chip, opts) {
+  const o = opts || {};
+  const clothHex = o.clothHex || state.clothHex || "#128C7E";
+  const threadHex = chip.thread_hex || "";
+  const num = chip.needle;
+  const numColor = clothTextOn(clothHex);
+  const fillStyle = threadHex ? `background:${escapeHtml(threadHex)}` : "";
+  const unk = threadHex ? "" : " unknown";
+  const tikli = chip.is_tikli ? `<em class="chip-tikli">${escapeHtml(t("tikliHere"))}</em>` : "";
+  const size = o.large ? " dhaga-row-large" : "";
+  return `
+    <div class="dhaga-row${size}${chip.is_tikli ? " is-tikli" : ""}">
+      <span class="needle-badge" style="background:${escapeHtml(clothHex)};color:${numColor}">${num}</span>
+      <div class="dhaga-strip-wrap">
+        <span class="dhaga-strip-bar${unk}" style="${fillStyle}"></span>
+        <span class="dhaga-strip-name">${escapeHtml(chip.thread || "")}${tikli ? " · " + escapeHtml(t("tikliHere")) : ""}</span>
+      </div>
+    </div>`;
+}
+
+function paintChipHtml(chip) {
+  return dhagaRowHtml(chip, { clothHex: state.clothHex });
+}
+
+function stripHtml(chips, extraClass) {
+  const list = (chips || []).filter((c) => (c.thread || "").trim()).slice(0, state.maxNeedles);
+  if (!list.length) return `<p class="meta">${escapeHtml(t("noNeedles"))}</p>`;
+  return `<div class="paint-strip ${extraClass || ""}">${list.map(paintChipHtml).join("")}</div>`;
+}
+
+function nearestSwatchLocal(r, g, b) {
+  let best = null;
+  let bestD = Infinity;
+  el.swatches.querySelectorAll(".swatch").forEach((btn) => {
+    const hex = swatchHex(btn);
+    const c = parseHex(hex);
+    const d = Math.sqrt((c.r - r) ** 2 + (c.g - g) ** 2 + (c.b - b) ** 2);
+    if (d < bestD) {
+      bestD = d;
+      best = btn;
     }
   });
-  if (!found && label) {
-    buttons.forEach((b) => {
-      const match =
-        (b.getAttribute("data-label") || "").toLowerCase() === String(label).toLowerCase();
-      b.classList.toggle("selected", match);
-      if (match) {
-        found = true;
-        hex = swatchHex(b);
-      }
+  if (!best) return null;
+  return {
+    cloth_id: best.getAttribute("data-id") || "",
+    label: best.getAttribute("data-label") || "",
+    hex: swatchHex(best),
+    gujarati: "",
+    confidence: Math.max(0, 1 - bestD / 441),
+  };
+}
+
+async function sampleColorFromFile(file) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = reject;
+      image.src = url;
     });
+    const size = 96;
+    const canvas = document.createElement("canvas");
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, size, size);
+    const data = ctx.getImageData(0, 0, size, size).data;
+    const margin = Math.floor(size * 0.2);
+    const usable = [];
+    for (let y = margin; y < size - margin; y++) {
+      for (let x = margin; x < size - margin; x++) {
+        const i = (y * size + x) * 4;
+        const pr = data[i];
+        const pg = data[i + 1];
+        const pb = data[i + 2];
+        const lum = (pr + pg + pb) / 3;
+        const spread = Math.max(pr, pg, pb) - Math.min(pr, pg, pb);
+        if (lum < 16 || lum > 248) continue;
+        if (spread < 6) continue;
+        usable.push([pr, pg, pb]);
+      }
+    }
+    const pool = usable.length ? usable : [[128, 128, 128]];
+    const r = pool.reduce((s, p) => s + p[0], 0) / pool.length;
+    const g = pool.reduce((s, p) => s + p[1], 0) / pool.length;
+    const b = pool.reduce((s, p) => s + p[2], 0) / pool.length;
+    return { r, g, b, sampled_hex: hexFromRgb(r, g, b) };
+  } finally {
+    URL.revokeObjectURL(url);
   }
-  el.swatches.classList.toggle("has-selection", Boolean(found || state.cloth));
-  return hex;
+}
+
+async function detectClothFromPhoto(file) {
+  let data = null;
+  try {
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/detect-cloth-color", { method: "POST", body: fd });
+    if (res.ok) data = await res.json();
+  } catch (err) {
+    /* offline fallback below */
+  }
+  if (data && data.cloth_id) return data;
+  const sample = await sampleColorFromFile(file);
+  const local = nearestSwatchLocal(sample.r, sample.g, sample.b);
+  if (!local) return null;
+  return {
+    sampled_hex: sample.sampled_hex,
+    cloth_id: local.cloth_id,
+    label: local.label,
+    hex: local.hex,
+    gujarati: local.gujarati,
+    confidence: local.confidence,
+    message: t("matchedPalette") + ": " + local.label,
+    understood_as: local.label,
+  };
+}
+
+function showClothApproval(data) {
+  if (!el.clothApproval || !data) return;
+  state.sampledHex = data.sampled_hex || data.hex || "";
+  const name = data.label || data.understood_as;
+  el.clothApproval.hidden = false;
+  el.clothGuessStrip.innerHTML = `
+    <div class="cloth-guess-pair">
+      ${clothStripHtml(data.sampled_hex, t("sampledFromPhoto"), "sampled")}
+      ${clothStripHtml(data.hex, t("matchedPalette"), "matched")}
+    </div>`;
+  el.clothGuessLabel.textContent = name || data.cloth_id;
+  const pct = Math.round((Number(data.confidence) || 0) * 100);
+  el.clothGuessMeta.textContent = (data.message || "") + (pct ? " · ~" + pct + "%" : "");
+  state.cloth = data.cloth_id;
+  state.clothLabel = data.label || data.cloth_id;
+  state.clothHex = data.hex || state.sampledHex;
+  state.clothApproved = false;
+  updateStartButton();
+}
+
+function approveClothGuess() {
+  state.clothApproved = true;
+  if (el.clothApproval) el.clothApproval.hidden = true;
+  setCloth(state.cloth, state.clothLabel, state.clothHex, true);
+}
+
+function rejectClothGuess() {
+  state.clothApproved = false;
+  if (el.clothApproval) el.clothApproval.hidden = true;
+  if (el.manualClothBlock) el.manualClothBlock.hidden = false;
+  updateStartButton();
+}
+
+async function onClothPhotoPicked(file) {
+  if (!file) return;
+  state.clothPhotoFile = file;
+  state.clothApproved = false;
+  if (state.clothPhotoUrl) URL.revokeObjectURL(state.clothPhotoUrl);
+  state.clothPhotoUrl = URL.createObjectURL(file);
+  el.clothPhotoPreview.hidden = false;
+  el.clothPhotoPreview.innerHTML = `
+    <img src="${state.clothPhotoUrl}" alt="" />
+    <p>${escapeHtml(t("detecting"))}</p>`;
+  el.clothApproval.hidden = true;
+  el.manualClothBlock.hidden = true;
+  updateStartButton();
+  const data = await detectClothFromPhoto(file);
+  el.clothPhotoPreview.innerHTML = `<img src="${state.clothPhotoUrl}" alt="" />`;
+  if (!data || !data.cloth_id) {
+    el.clothPhotoPreview.innerHTML += `<p class="meta bad">${escapeHtml(t("detectFail"))}</p>`;
+    el.manualClothBlock.hidden = false;
+    return;
+  }
+  showClothApproval(data);
 }
 
 const LOCAL_ALIASES = {
@@ -353,7 +411,6 @@ const LOCAL_ALIASES = {
   yellow: "yellow",
   badami: "fawn",
   fawn: "fawn",
-  beige: "fawn",
   gray: "grey",
   grey: "grey",
   safed: "white",
@@ -385,7 +442,7 @@ const LOCAL_ALIASES = {
   "light green": "light green",
 };
 
-function localResolveCloth(text, shadeValue) {
+function localResolveCloth(text) {
   const raw = String(text || "").trim();
   const cleaned = raw.toLowerCase().replace(/[.,;:!?]/g, " ").replace(/\s+/g, " ").trim();
   let base = LOCAL_ALIASES[cleaned] || "";
@@ -398,163 +455,68 @@ function localResolveCloth(text, shadeValue) {
     }
   }
   if (!base) {
-    const safe = cleaned.replace(/"/g, "");
-    const btn = el.swatches.querySelector('.swatch[data-id="' + safe + '"]');
+    const btn = el.swatches.querySelector('.swatch[data-id="' + cleaned.replace(/"/g, "") + '"]');
     if (btn) base = cleaned;
   }
-  if (!base) {
-    return {
-      cloth_id: "",
-      label: "",
-      hex: "#ccc",
-      shade: shadeValue <= 33 ? "light" : shadeValue >= 67 ? "dark" : "mid",
-      message: 'Could not understand "' + raw + '"',
-      understood_as: "",
-    };
-  }
-  let clothId = base;
-  let shade = "mid";
-  if (shadeValue <= 33) shade = "light";
-  else if (shadeValue >= 67) shade = "dark";
-  const lightMap = {
-    green: "light green",
-    pink: "pink",
-    blue: "sky blue",
-    peach: "peach",
-    yellow: "lemon",
-    red: "tomato",
-  };
-  const darkMap = {
-    green: "mehndi",
-    pink: "rani",
-    blue: "navy blue",
-    peach: "orange",
-    yellow: "mustard",
-    red: "maroon",
-  };
-  if (shade === "light" && lightMap[base]) clothId = lightMap[base];
-  if (shade === "dark" && darkMap[base]) clothId = darkMap[base];
-  const btn =
-    el.swatches.querySelector('.swatch[data-id="' + clothId + '"]') ||
-    el.swatches.querySelector('.swatch[data-id="' + base + '"]');
-  const label =
-    (btn && btn.getAttribute("data-label")) ||
-    base.replace(/\b\w/g, (c) => c.toUpperCase());
-  const hex = btn ? swatchHex(btn) : "#888";
-  const shadeBit = shade === "light" ? " · " + t("lighter") : shade === "dark" ? " · " + t("darker") : "";
-  const message =
-    cleaned !== base && cleaned !== clothId
-      ? t("using") + " " + label + shadeBit
-      : t("using") + " " + label + shadeBit;
+  if (!base) return null;
+  const btn = el.swatches.querySelector('.swatch[data-id="' + base + '"]');
+  if (!btn) return null;
   return {
-    cloth_id: clothId,
-    label,
-    hex,
-    shade,
-    message,
-    understood_as: label,
+    cloth_id: base,
+    label: btn.getAttribute("data-label") || base,
+    hex: swatchHex(btn),
+    message: t("using") + " " + (btn.getAttribute("data-label") || base),
   };
-}
-
-function applyResolvedCloth(data) {
-  if (!data || !data.cloth_id) return;
-  state.cloth = data.cloth_id;
-  const shadeBit =
-    data.shade === "light" ? " · " + t("lighter") : data.shade === "dark" ? " · " + t("darker") : "";
-  if (el.clothVerify) {
-    el.clothVerify.textContent = data.message || t("using") + " " + data.understood_as;
-    el.clothVerify.className = "cloth-verify ok";
-  }
-  el.clothPicked.textContent =
-    t("selected") + ": " + (data.understood_as || data.label || data.cloth_id) + shadeBit;
-  el.clothPicked.style.color = "#075E54";
-  const hex = markSwatchSelected(data.cloth_id, data.label, false);
-  showShadePanel(data.understood_as || data.label, data.hex || hex);
 }
 
 async function resolveClothNow() {
-  const text = (el.clothText.value || "").trim() || state.clothRaw || state.cloth;
-  if (!text) {
-    if (el.clothVerify) {
-      el.clothVerify.textContent = t("slideShade");
-      el.clothVerify.className = "cloth-verify";
-    }
-    return null;
-  }
-
-  const local = localResolveCloth(text, state.shadeValue);
-  if (local.cloth_id) {
+  const text = (el.clothText.value || "").trim();
+  if (!text) return null;
+  const local = localResolveCloth(text);
+  if (local) {
     state.clothRaw = text;
-    applyResolvedCloth(local);
+    setCloth(local.cloth_id, local.label, local.hex, true);
   }
-
   try {
     const res = await fetch("/api/resolve-cloth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, shade_value: state.shadeValue }),
+      body: JSON.stringify({ text, shade_value: 50 }),
     });
-    if (!res.ok) {
-      if (!local.cloth_id && el.clothVerify) {
-        el.clothVerify.textContent = t("pleaseCloth");
-        el.clothVerify.className = "cloth-verify bad";
-      }
-      return local.cloth_id ? local : null;
-    }
+    if (!res.ok) return local;
     const data = await res.json();
-    if (!data.cloth_id) {
-      if (local.cloth_id) return local;
-      el.clothVerify.textContent = data.message || t("pleaseCloth");
-      el.clothVerify.className = "cloth-verify bad";
-      return data;
+    if (data.cloth_id) {
+      state.clothRaw = text;
+      setCloth(data.cloth_id, data.label || data.understood_as, data.hex, true);
     }
-    state.clothRaw = text;
-    applyResolvedCloth(data);
     return data;
   } catch (err) {
-    if (local.cloth_id) return local;
-    if (el.clothVerify) {
-      el.clothVerify.textContent = t("pleaseCloth");
-      el.clothVerify.className = "cloth-verify bad";
-    }
-    return null;
+    return local;
   }
 }
 
 function bindSwatches() {
-  const buttons = el.swatches.querySelectorAll(".swatch");
-  buttons.forEach((btn) => {
+  el.swatches.querySelectorAll(".swatch").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-id") || "";
       const label = btn.getAttribute("data-label") || id;
-      const hex = swatchHex(btn);
       el.clothText.value = "";
-      state.shadeValue = 50;
-      el.shadeBar.value = "50";
-      updateShadeLabel();
-      state.cloth = id;
       state.clothRaw = id;
-      markSwatchSelected(id, label, true);
-      el.clothPicked.textContent = t("selected") + ": " + (state.lang === "gu" ? (btn.getAttribute("data-gu") || label) : label);
-      el.clothPicked.style.color = "#075E54";
-      showShadePanel(label, hex);
-      el.clothVerify.textContent = t("nowSlide") + " " + (state.lang === "gu" ? (btn.getAttribute("data-gu") || label) : label);
-      el.clothVerify.className = "cloth-verify ok";
-      resolveClothNow();
-      el.shadePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      setCloth(id, label, swatchHex(btn), true);
+      if (el.clothApproval) el.clothApproval.hidden = true;
     });
   });
 }
 
-function clearGallery() {
+function clearDesignPhoto() {
   state.similarDesignNos = [];
   state.exactDesignNo = "";
   state.hasDesignPhoto = false;
-  state.uploadFile = null;
-  el.galleryUpload.value = "";
-  el.galleryClear.hidden = true;
-  el.gallerySelected.hidden = true;
-  el.gallerySelected.innerHTML = "";
+  state.designPhotoFile = null;
+  el.designPhotoUpload.value = "";
+  el.designClear.hidden = true;
+  el.designSelected.hidden = true;
+  el.designSelected.innerHTML = "";
   el.similarRow.hidden = true;
   el.similarList.innerHTML = "";
   clearExactDesign();
@@ -582,9 +544,7 @@ async function fetchSimilarUpload(file) {
     const data = await res.json();
     showExactDesign(data.exact_design || null);
     const matched = data.matched_design_nos || [];
-    if (matched.length) {
-      state.similarDesignNos = matched;
-    }
+    if (matched.length) state.similarDesignNos = matched;
     showSimilar(data.similar || [], Boolean(data.exact_design));
     if (!state.similarDesignNos.length && state.exactDesignNo) {
       state.similarDesignNos = [state.exactDesignNo];
@@ -594,28 +554,6 @@ async function fetchSimilarUpload(file) {
   }
 }
 
-function paintChipHtml(chip) {
-  const hex = chip.thread_hex || "";
-  const fillClass = hex ? "paint-fill" : "paint-fill unknown";
-  const fillStyle = hex ? ` style="background:${escapeHtml(hex)}"` : "";
-  const tikli = chip.is_tikli ? `<em class="chip-tikli">${escapeHtml(t("tikliHere"))}</em>` : "";
-  return `
-    <div class="paint-chip${chip.is_tikli ? " is-tikli" : ""}${chip.thread && chip.thread === state.pickedThread ? " selected" : ""}" data-thread="${escapeHtml(chip.thread || "")}" data-hex="${escapeHtml(hex)}">
-      <span class="${fillClass}"${fillStyle}></span>
-      <span class="paint-meta">
-        <strong>${escapeHtml(t("needle"))}${chip.needle}</strong>
-        <span>${escapeHtml(chip.thread || "")}</span>
-        ${tikli}
-      </span>
-    </div>`;
-}
-
-function stripHtml(chips, extraClass) {
-  const list = (chips || []).filter((c) => (c.thread || "").trim());
-  if (!list.length) return `<p class="meta">${escapeHtml(t("noNeedles"))}</p>`;
-  return `<div class="paint-strip ${extraClass || ""}">${list.map(paintChipHtml).join("")}</div>`;
-}
-
 function showExactDesign(exact) {
   if (!el.exactDesign) return;
   if (!exact || !exact.design_no) {
@@ -623,18 +561,15 @@ function showExactDesign(exact) {
     return;
   }
   state.exactDesignNo = String(exact.design_no);
-  state.similarDesignNos = [
-    state.exactDesignNo,
-    ...state.similarDesignNos.filter((d) => d !== state.exactDesignNo),
-  ];
+  state.similarDesignNos = [state.exactDesignNo, ...state.similarDesignNos.filter((d) => d !== state.exactDesignNo)];
   el.exactDesign.hidden = false;
   el.exactTitle.textContent = exact.message || "Exact same design found: #" + exact.design_no;
   const cloths = (exact.cloths_used || []).join(", ");
   el.exactMeta.textContent = cloths
-    ? "Past cloths for this design: " + cloths
+    ? "Past cloths: " + cloths
     : exact.past_count
       ? exact.past_count + " past recipes"
-      : "Matched in gallery — no colour-book rows yet for this number";
+      : "Matched in gallery";
 
   const rows = exact.past_recipes || [];
   if (!rows.length) {
@@ -643,18 +578,18 @@ function showExactDesign(exact) {
   }
   el.pastRecipes.innerHTML = rows
     .map((r) => {
-      const chips = r.chips && r.chips.length
-        ? r.chips
-        : [r.n1, r.n2, r.n3, r.n4, r.n5]
-            .map((n, i) => ({ needle: i + 1, thread: n || "", thread_hex: "", is_tikli: r.tikli_needle === i + 1 }))
-            .filter((c) => c.thread);
-      return `
-        <div class="past-card">
-          <div class="past-top">
-            <strong>${escapeHtml(r.cloth || "—")}</strong>
-          </div>
-          ${stripHtml(chips, "compact")}
-        </div>`;
+      const chips =
+        r.chips && r.chips.length
+          ? r.chips
+          : [r.n1, r.n2, r.n3, r.n4, r.n5]
+              .map((n, i) => ({
+                needle: i + 1,
+                thread: n || "",
+                thread_hex: "",
+                is_tikli: r.tikli_needle === i + 1,
+              }))
+              .filter((c) => c.thread);
+      return `<div class="past-card"><div class="past-top"><strong>${escapeHtml(r.cloth || "—")}</strong></div>${stripHtml(chips, "compact")}</div>`;
     })
     .join("");
 }
@@ -662,11 +597,9 @@ function showExactDesign(exact) {
 function showSimilar(rows, hasExact) {
   const nos = [...new Set(rows.map((r) => r.design_no).filter(Boolean))];
   if (nos.length) {
-    if (state.exactDesignNo) {
-      state.similarDesignNos = [state.exactDesignNo, ...nos.filter((d) => d !== state.exactDesignNo)];
-    } else {
-      state.similarDesignNos = nos;
-    }
+    state.similarDesignNos = state.exactDesignNo
+      ? [state.exactDesignNo, ...nos.filter((d) => d !== state.exactDesignNo)]
+      : nos;
   } else if (state.exactDesignNo) {
     state.similarDesignNos = [state.exactDesignNo];
   }
@@ -677,17 +610,11 @@ function showSimilar(rows, hasExact) {
   }
   el.similarRow.hidden = false;
   const label = el.similarRow.querySelector(".similar-label");
-  if (label) {
-    label.textContent = hasExact ? t("alsoSimilar") : t("similarPast");
-  }
+  if (label) label.textContent = hasExact ? t("alsoSimilar") : t("similarPast");
   el.similarList.innerHTML = rows
     .map((r) => {
-      const exactBadge = r.exact ? ' <span class="exact-badge">exact</span>' : "";
-      return `
-      <div class="similar-chip${r.exact ? " is-exact" : ""}">
-        ${r.thumb_url ? `<img src="${escapeHtml(r.thumb_url)}" alt="" loading="lazy" />` : ""}
-        <span>${escapeHtml(r.design_no)}${exactBadge}</span>
-      </div>`;
+      const badge = r.exact ? ' <span class="exact-badge">exact</span>' : "";
+      return `<div class="similar-chip${r.exact ? " is-exact" : ""}">${r.thumb_url ? `<img src="${escapeHtml(r.thumb_url)}" alt="" loading="lazy" />` : ""}<span>${escapeHtml(r.design_no)}${badge}</span></div>`;
     })
     .join("");
 }
@@ -696,7 +623,12 @@ function resetStripFlow() {
   state.recipes = [];
   state.colourOptions = [];
   state.selectedRank = 0;
-  el.finalPanel.hidden = true;
+  state.pickedThread = "";
+  state.pickedHex = "";
+  el.finalCanvas.hidden = true;
+  document.body.classList.remove("final-mode");
+  const formPanel = el.mainShell.querySelector("#form-panel");
+  if (formPanel) formPanel.hidden = false;
   el.stepPanel.hidden = true;
   el.resetPicks.hidden = true;
   el.recipeStrips.innerHTML = "";
@@ -711,15 +643,16 @@ function resetStripFlow() {
 }
 
 async function ensureCloth() {
-  if (el.clothText.value.trim() || state.cloth) {
-    const data = await resolveClothNow();
-    if (data && data.cloth_id) return true;
-    if (state.cloth) return true;
+  if (!state.clothApproved || !state.cloth) {
+    if (el.clothPicked) {
+      el.clothPicked.hidden = false;
+      el.clothPicked.textContent = t("approveFirst");
+      el.clothPicked.style.color = "#c0392b";
+    }
+    return false;
   }
-  el.clothPicked.textContent = t("pleaseCloth");
-  el.clothPicked.style.color = "#c0392b";
-  el.swatches.scrollIntoView({ behavior: "smooth", block: "center" });
-  return false;
+  if (el.clothText.value.trim()) await resolveClothNow();
+  return true;
 }
 
 async function loadRecipes() {
@@ -728,23 +661,21 @@ async function loadRecipes() {
 
   state.maxNeedles = Number(el.threads.value || 3);
   el.stepPanel.hidden = false;
-  el.finalPanel.hidden = true;
+  el.finalCanvas.hidden = true;
+  document.body.classList.remove("final-mode");
   el.resetPicks.hidden = false;
-  el.useStrip.hidden = !state.selectedRank;
   el.recipeStrips.innerHTML = '<p class="meta">' + escapeHtml(t("loading")) + "</p>";
 
-  if (state.uploadFile) {
-    await fetchSimilarUpload(state.uploadFile);
-  }
+  if (state.designPhotoFile) await fetchSimilarUpload(state.designPhotoFile);
 
   const body = {
     cloth: state.cloth,
     cloth_raw: (el.clothText.value || "").trim() || state.clothRaw || state.cloth,
-    shade_value: state.shadeValue,
+    shade_value: 50,
     design_no: state.exactDesignNo || "",
     thread_count: state.maxNeedles,
     similar_design_nos: state.similarDesignNos,
-    has_design_photo: Boolean(state.hasDesignPhoto || state.uploadFile),
+    has_design_photo: Boolean(state.hasDesignPhoto || state.designPhotoFile),
   };
 
   try {
@@ -755,13 +686,8 @@ async function loadRecipes() {
     });
     if (!res.ok) throw new Error("fail");
     const data = await res.json();
-    if (data.cloth && data.cloth.message && el.clothVerify) {
-      el.clothVerify.textContent = data.cloth.message;
-      el.clothVerify.className = "cloth-verify ok";
-    }
-    if (data.cloth && data.cloth.cloth_id) {
-      state.cloth = data.cloth.cloth_id;
-    }
+    if (data.cloth && data.cloth.cloth_id) state.cloth = data.cloth.cloth_id;
+    if (data.cloth && data.cloth.hex) state.clothHex = data.cloth.hex;
     showDesignHelp(data.design_help_percent, data.design_help_note, data);
     showTikli(data.tikli || null);
     state.recipes = data.recipes || [];
@@ -777,56 +703,32 @@ async function loadRecipes() {
 
 function showTikli(info) {
   state.tikliNeedle = info && info.tikli_needle ? Number(info.tikli_needle) : 0;
+  const html =
+    info && info.has_tikli && info.tikli_needle
+      ? escapeHtml(t("tikliHere")) + " · <strong>" + escapeHtml(t("needle")) + info.tikli_needle + "</strong>"
+      : "";
   if (el.tikliBanner) {
-    if (info && info.has_tikli && info.tikli_needle) {
-      el.tikliBanner.hidden = false;
-      el.tikliBanner.innerHTML =
-        escapeHtml(t("tikliHere")) +
-        " · <strong>" +
-        escapeHtml(t("needle")) +
-        info.tikli_needle +
-        "</strong>";
-    } else {
-      el.tikliBanner.hidden = true;
-      el.tikliBanner.textContent = "";
-    }
+    el.tikliBanner.hidden = !html;
+    el.tikliBanner.innerHTML = html;
   }
   if (el.finalTikli) {
-    if (info && info.has_tikli && info.tikli_needle) {
-      el.finalTikli.hidden = false;
-      el.finalTikli.innerHTML =
-        escapeHtml(t("tikliHere")) +
-        " · <strong>" +
-        escapeHtml(t("needle")) +
-        info.tikli_needle +
-        "</strong>";
-    } else {
-      el.finalTikli.hidden = true;
-      el.finalTikli.textContent = "";
-    }
+    el.finalTikli.hidden = !html;
+    el.finalTikli.innerHTML = html;
   }
 }
 
 function showDesignHelp(pct, note, meta) {
   if (!el.designHelp) return;
   const n = Math.max(0, Math.min(100, Number(pct) || 0));
-  const matched = (meta && meta.similar_used) || [];
-  const designNo = (meta && meta.design_no_used) || "";
   el.designHelp.hidden = false;
   el.designHelp.className = "design-help" + (n > 0 ? " has-help" : "");
-  let title = "Design +" + n + "%";
-  let detail = note || "";
-  if (designNo) detail += " · #" + designNo;
-  else if (matched.length) detail += " · #" + matched.slice(0, 3).join(", #");
   el.designHelp.innerHTML =
-    "<div class='design-help-top'><strong>" +
-    escapeHtml(title) +
-    "</strong></div>" +
-    "<div class='design-help-bar'><span style='width:" +
+    "<div class='design-help-top'><strong>Design +" +
     n +
-    "%'></span></div>" +
-    "<p class='design-help-note'>" +
-    escapeHtml(detail) +
+    "%</strong></div><div class='design-help-bar'><span style='width:" +
+    n +
+    "%'></span></div><p class='design-help-note'>" +
+    escapeHtml(note || "") +
     "</p>";
 }
 
@@ -851,8 +753,8 @@ function renderRecipeStrips() {
     .map((rec) => {
       const on = rec.rank === state.selectedRank ? " selected" : "";
       const best = rec.rank === 1 ? " best" : "";
-      const chips = rec.chips || [];
       const mark = rec.rank === state.selectedRank ? " ✓" : "";
+      const chips = (rec.chips || []).slice(0, state.maxNeedles);
       return `
         <button type="button" class="recipe-strip-card${on}${best}" data-rank="${rec.rank}">
           <div class="strip-head">
@@ -873,17 +775,15 @@ function renderRecipeStrips() {
       el.useStrip.hidden = false;
     });
   });
-  el.recipeStrips.querySelectorAll(".paint-chip").forEach((chip) => {
-    chip.addEventListener("click", (ev) => {
+  el.recipeStrips.querySelectorAll(".dhaga-row").forEach((row) => {
+    row.addEventListener("click", (ev) => {
       ev.stopPropagation();
-      const thread = chip.getAttribute("data-thread") || "";
-      const hex = chip.getAttribute("data-hex") || "";
-      state.pickedThread = thread;
-      state.pickedHex = hex;
-      const parent = chip.closest(".recipe-strip-card");
-      if (parent) {
-        state.selectedRank = Number(parent.getAttribute("data-rank") || state.selectedRank);
-      }
+      const wrap = row.closest(".recipe-strip-card");
+      const nameEl = row.querySelector(".dhaga-strip-name");
+      const bar = row.querySelector(".dhaga-strip-bar");
+      state.pickedThread = nameEl ? nameEl.textContent.split(" · ")[0] : "";
+      state.pickedHex = bar && bar.style.background ? bar.style.background : "";
+      if (wrap) state.selectedRank = Number(wrap.getAttribute("data-rank") || state.selectedRank);
       renderRecipeStrips();
       el.useStrip.hidden = false;
     });
@@ -900,27 +800,21 @@ function renderColourOptions() {
   }
   el.colourOptions.innerHTML = opts
     .map((opt) => {
-      const hex = opt.thread_hex || "";
-      const fill = hex
-        ? `style="background:${escapeHtml(hex)}"`
-        : "";
-      const unk = hex ? "" : " unknown";
+      const chip = {
+        needle: opt.rank,
+        thread: opt.thread,
+        thread_hex: opt.thread_hex || "",
+        is_tikli: false,
+      };
       const on = (opt.thread || "") === state.pickedThread ? " selected" : "";
-      return `
-        <button type="button" class="paint-chip colour-opt${on}" data-thread="${escapeHtml(opt.thread || "")}" data-hex="${escapeHtml(hex)}">
-          <span class="paint-fill${unk}" ${fill}></span>
-          <span class="paint-meta">
-            <strong>${opt.rank}</strong>
-            <span>${escapeHtml(opt.thread || "")}</span>
-          </span>
-        </button>`;
+      return `<button type="button" class="colour-opt-btn${on}" data-thread="${escapeHtml(opt.thread || "")}" data-hex="${escapeHtml(opt.thread_hex || "")}">${dhagaRowHtml(chip, { clothHex: state.clothHex })}</button>`;
     })
     .join("");
-  el.colourOptions.querySelectorAll(".colour-opt").forEach((btn) => {
+  el.colourOptions.querySelectorAll(".colour-opt-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      el.colourOptions.querySelectorAll(".colour-opt").forEach((b) => b.classList.remove("selected"));
-      btn.classList.add("selected");
-      showPickedThread(btn.getAttribute("data-thread") || "", btn.getAttribute("data-hex") || "");
+      state.pickedThread = btn.getAttribute("data-thread") || "";
+      state.pickedHex = btn.getAttribute("data-hex") || "";
+      renderColourOptions();
       renderRecipeStrips();
     });
   });
@@ -931,18 +825,9 @@ function showPickedThread(thread, hex) {
   state.pickedThread = thread;
   state.pickedHex = hex || "";
   el.pickedThread.hidden = false;
-  const fill = hex
-    ? `style="background:${escapeHtml(hex)}"`
-    : "";
-  const unk = hex ? "" : " unknown";
   el.pickedThread.innerHTML = `
-    <div class="picked-thread-chip">
-      <span class="paint-fill big${unk}" ${fill}></span>
-      <div>
-        <p class="picked-kicker">${escapeHtml(t("colourPicked"))}</p>
-        <p class="picked-name">${escapeHtml(thread)}</p>
-      </div>
-    </div>`;
+    <p class="picked-kicker">${escapeHtml(t("colourPicked"))}</p>
+    ${dhagaRowHtml({ needle: "?", thread, thread_hex: hex, is_tikli: false }, { clothHex: state.clothHex, large: true })}`;
 }
 
 function showSelectedThreadPreview() {
@@ -959,91 +844,66 @@ function showSelectedThreadPreview() {
 function showFinal() {
   const rec = selectedRecipe();
   if (!rec) return;
+  const chips = (rec.chips || []).slice(0, state.maxNeedles);
   el.stepPanel.hidden = true;
-  el.finalPanel.hidden = false;
-  const chips = rec.chips || [];
-  el.finalMap.innerHTML = `
-    <div class="final-strip-wrap">
-      <p class="strip-num">${escapeHtml(t("recipe"))} ${rec.rank}${rec.rank === 1 ? " · " + t("best") : ""}</p>
-      ${stripHtml(chips, "final")}
-    </div>
-    <div class="final-rows">
-      ${chips
-        .map(
-          (c) => `
-        <div class="final-row">
-          <span class="nlabel">${escapeHtml(t("needle"))}${c.needle}${c.is_tikli ? " · " + t("tikliHere") : ""}</span>
-          <span class="nval-wrap">
-            <span class="thread-dot" style="${c.thread_hex ? "background:" + escapeHtml(c.thread_hex) : ""}"></span>
-            <span class="nval">${escapeHtml(c.thread)}${c.is_tikli ? " · " + t("tikliHere") : ""}</span>
-          </span>
-        </div>`
-        )
-        .join("")}
-    </div>`;
+  el.mainShell.querySelector("#form-panel").hidden = true;
+  document.body.classList.add("final-mode");
+  el.finalCanvas.hidden = false;
+  el.finalCanvasBg.style.background = state.clothHex || "#128C7E";
+  el.finalClothName.textContent = clothDisplayName() + " · " + t("recipe") + " " + rec.rank;
+  el.finalDhagaStrips.innerHTML = chips
+    .map((c) => dhagaRowHtml(c, { clothHex: state.clothHex, large: true }))
+    .join("");
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-loadSavedLang();
+applyStrings();
 bindSwatches();
-updateShadeLabel();
-
-document.querySelectorAll(".lang-btn").forEach((btn) => {
-  btn.addEventListener("click", () => applyLang(btn.getAttribute("data-lang") || "en"));
-});
+updateStartButton();
 
 el.clothText.addEventListener("input", () => {
   clearTimeout(state.resolveTimer);
-  state.resolveTimer = setTimeout(() => {
-    state.shadeValue = Number(el.shadeBar.value || 50);
-    resolveClothNow();
-  }, 350);
+  state.resolveTimer = setTimeout(resolveClothNow, 350);
 });
 el.clothText.addEventListener("change", resolveClothNow);
 el.clothText.addEventListener("blur", resolveClothNow);
 
-el.shadeBar.addEventListener("input", () => {
-  state.shadeValue = Number(el.shadeBar.value || 50);
-  updateShadeLabel();
-  clearTimeout(state.resolveTimer);
-  state.resolveTimer = setTimeout(resolveClothNow, 150);
+el.openClothPhoto.addEventListener("click", () => el.clothPhotoUpload.click());
+el.clothPhotoUpload.addEventListener("change", async () => {
+  const file = el.clothPhotoUpload.files && el.clothPhotoUpload.files[0];
+  if (file) await onClothPhotoPicked(file);
 });
+el.approveCloth.addEventListener("click", approveClothGuess);
+el.rejectCloth.addEventListener("click", rejectClothGuess);
 
-el.openGallery.addEventListener("click", () => {
-  el.galleryUpload.click();
-});
-
-el.galleryUpload.addEventListener("change", async () => {
-  const file = el.galleryUpload.files && el.galleryUpload.files[0];
+el.openDesignPhoto.addEventListener("click", () => el.designPhotoUpload.click());
+el.designPhotoUpload.addEventListener("change", async () => {
+  const file = el.designPhotoUpload.files && el.designPhotoUpload.files[0];
   if (!file) return;
-  state.uploadFile = file;
+  state.designPhotoFile = file;
   state.hasDesignPhoto = true;
-  el.galleryClear.hidden = false;
-  el.gallerySelected.hidden = false;
-  el.gallerySelected.innerHTML = `
-    <img src="${URL.createObjectURL(file)}" alt="" />
-    <div><strong>${escapeHtml(t("photoSelected"))}</strong><p>${escapeHtml(file.name)}</p></div>
-  `;
+  el.designClear.hidden = false;
+  el.designSelected.hidden = false;
+  el.designSelected.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="" /><div><strong>${escapeHtml(t("photoSelected"))}</strong><p>${escapeHtml(file.name)}</p></div>`;
   await fetchSimilarUpload(file);
 });
-
-el.galleryClear.addEventListener("click", clearGallery);
+el.designClear.addEventListener("click", clearDesignPhoto);
 
 el.start.addEventListener("click", () => {
   state.selectedRank = 0;
   loadRecipes();
 });
-
 el.resetPicks.addEventListener("click", resetStripFlow);
-
 el.useStrip.addEventListener("click", showFinal);
-
 el.changeStrip.addEventListener("click", () => {
-  el.finalPanel.hidden = true;
+  el.finalCanvas.hidden = true;
+  document.body.classList.remove("final-mode");
+  el.mainShell.querySelector("#form-panel").hidden = false;
   el.stepPanel.hidden = false;
   el.stepPanel.scrollIntoView({ behavior: "smooth", block: "start" });
 });
-
 el.again.addEventListener("click", () => {
   resetStripFlow();
+  el.mainShell.querySelector("#form-panel").hidden = false;
   window.scrollTo({ top: 0, behavior: "smooth" });
 });

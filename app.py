@@ -17,7 +17,7 @@ sys.path.insert(0, str(ROOT / "src"))
 from services.gallery_service import GalleryIndex  # noqa: E402
 from services.lite_recommender import LiteRecommender  # noqa: E402
 from utils.cloth_palette import cloth_palette  # noqa: E402
-from utils.cloth_vocab import resolve_cloth  # noqa: E402
+from utils.cloth_vocab import nearest_cloth_from_rgb, resolve_cloth  # noqa: E402
 from utils.thread_colors import (  # noqa: E402
     enrich_options_with_thread_colour,
     enrich_recipe_needles,
@@ -30,7 +30,7 @@ GALLERY_JOBLIB = ROOT / "models" / "gallery_index.joblib"
 GALLERY_ROOT = ROOT / "Jeetubhai Images"
 STATIC_DIR = ROOT / "web"
 
-app = FastAPI(title="Dhaga Pick", version="1.4.0")
+app = FastAPI(title="Dhaga Pick", version="1.5.0")
 _model: LiteRecommender | None = None
 _gallery: GalleryIndex | None = None
 
@@ -116,6 +116,58 @@ def health():
         "cloths": cloths,
         "cloth_swatches": cloth_palette(cloths),
         "gallery_images": len(gallery.items) if gallery else 0,
+    }
+
+
+def _sample_cloth_rgb(img: Image.Image) -> tuple[int, int, int]:
+    """Dominant cloth colour from centre of photo (screen approx)."""
+    img = img.convert("RGB")
+    w, h = img.size
+    crop = img.crop((int(w * 0.18), int(h * 0.18), int(w * 0.82), int(h * 0.82)))
+    crop = crop.resize((56, 56), Image.Resampling.LANCZOS)
+    pixels = list(crop.getdata())
+    usable: list[tuple[int, int, int]] = []
+    for pr, pg, pb in pixels:
+        lum = (pr + pg + pb) / 3
+        spread = max(pr, pg, pb) - min(pr, pg, pb)
+        if lum < 16 or lum > 248:
+            continue
+        if spread < 6:
+            continue
+        usable.append((pr, pg, pb))
+    if not usable:
+        usable = list(pixels)
+    r = sum(p[0] for p in usable) // len(usable)
+    g = sum(p[1] for p in usable) // len(usable)
+    b = sum(p[2] for p in usable) // len(usable)
+    return r, g, b
+
+
+@app.post("/api/detect-cloth-color")
+async def detect_cloth_color(file: UploadFile = File(...)):
+    """Guess cloth palette colour from a photo; user confirms in UI."""
+    if not file.filename:
+        raise HTTPException(400, "Upload a cloth photo")
+    raw = await file.read()
+    try:
+        img = Image.open(io.BytesIO(raw))
+    except Exception as exc:
+        raise HTTPException(400, "Could not read image") from exc
+    r, g, b = _sample_cloth_rgb(img)
+    model = get_model()
+    known = {c for c in {r.cloth for r in model.recipes if r.cloth}}
+    resolved = nearest_cloth_from_rgb(r, g, b, known_cloths=known)
+    sampled_hex = "#{:02x}{:02x}{:02x}".format(r, g, b)
+    return {
+        "sampled_rgb": {"r": r, "g": g, "b": b},
+        "sampled_hex": sampled_hex,
+        "cloth_id": resolved.cloth_id,
+        "label": resolved.label,
+        "hex": resolved.hex,
+        "gujarati": resolved.gujarati,
+        "confidence": resolved.confidence,
+        "message": resolved.message,
+        "understood_as": resolved.understood_as,
     }
 
 

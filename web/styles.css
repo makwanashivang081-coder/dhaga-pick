@@ -11,8 +11,8 @@
   --best: #fff3a0;
   --shadow: 0 14px 36px rgba(7, 94, 84, 0.12);
   --radius: 18px;
-  --font: "Manrope", "Noto Sans Gujarati", system-ui, sans-serif;
-  --display: "Fraunces", "Noto Sans Gujarati", Georgia, serif;
+  --font: "Manrope", system-ui, sans-serif;
+  --display: "Fraunces", Georgia, serif;
   --chip-gap: 0.55rem;
   --strip-gap: 1.25rem;
 }
@@ -113,14 +113,6 @@ body { background: #efeae2; }
   filter: saturate(1.25) contrast(1.08);
 }
 .swatch .name { font-size: 0.82rem; font-weight: 800; }
-.swatch .name-gu {
-  display: none;
-  font-size: 0.72rem;
-  font-weight: 700;
-  opacity: 0.85;
-}
-body.lang-gu .swatch .name { font-size: 0.7rem; font-weight: 700; opacity: 0.75; }
-body.lang-gu .swatch .name-gu { display: block; font-size: 0.84rem; font-weight: 800; opacity: 1; }
 .swatch:active { transform: scale(0.97); }
 .swatch.selected {
   border-color: var(--accent2);
@@ -821,41 +813,6 @@ input, select {
   }
 }
 
-/* —— Language —— */
-.hero-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-.lang-toggle {
-  display: inline-flex;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  overflow: hidden;
-  background: #fff;
-  flex: 0 0 auto;
-}
-.lang-btn {
-  appearance: none;
-  border: 0;
-  background: transparent;
-  padding: 0.45rem 0.7rem;
-  font: inherit;
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: var(--muted);
-  cursor: pointer;
-  min-height: 40px;
-}
-.lang-btn.active {
-  background: var(--accent2);
-  color: #fff;
-}
-body.lang-gu {
-  font-family: "Noto Sans Gujarati", var(--font);
-}
-
 /* —— Chosen cloth palette (paint strip) —— */
 .paint-cloth-strip {
   margin-top: 0.35rem;
@@ -994,10 +951,9 @@ body.lang-gu {
 }
 .paint-colour-row {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--chip-gap);
 }
-.paint-colour-row .paint-chip { min-width: 0; }
 .picked-thread {
   margin-top: 0.9rem;
   padding: 0.75rem;
@@ -1035,4 +991,234 @@ body.lang-gu {
   }
   .paint-fill { height: 70px; }
   .recipe-strips { gap: 1.1rem; }
+}
+
+/* —— Cloth photo + approval —— */
+.cloth-photo-btn { width: 100%; margin-bottom: 0.35rem; }
+.cloth-photo-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+.cloth-photo-preview img {
+  width: 100%;
+  max-width: 280px;
+  border-radius: 14px;
+  object-fit: cover;
+  aspect-ratio: 4/3;
+  border: 2px solid var(--line);
+}
+.cloth-approval {
+  margin-top: 0.65rem;
+  padding: 0.85rem;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+}
+.approval-ask {
+  margin: 0 0 0.55rem;
+  font-weight: 800;
+  color: var(--accent2);
+}
+.cloth-guess-pair {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 0.55rem;
+}
+.cloth-strip-preview { display: flex; flex-direction: column; gap: 0.25rem; }
+.cloth-strip-bar {
+  display: block;
+  height: 56px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
+  filter: saturate(1.15) contrast(1.05);
+}
+.cloth-strip-caption {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.cloth-guess-label {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+.cloth-guess-meta {
+  margin: 0.25rem 0 0.65rem;
+  font-size: 0.86rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.approval-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+.approval-actions .btn { flex: 1 1 auto; min-width: 0; }
+.meta.bad { color: #c0392b; font-weight: 700; }
+
+/* —— Dhaga row: needle # in cloth colour, strip = thread colour —— */
+.dhaga-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.55rem;
+  width: 100%;
+}
+.needle-badge {
+  flex: 0 0 auto;
+  width: 2.4rem;
+  min-height: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+.dhaga-strip-wrap {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+.dhaga-strip-bar {
+  display: block;
+  height: 2.4rem;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.12);
+  filter: saturate(1.2) contrast(1.05);
+}
+.dhaga-strip-bar.unknown {
+  background: repeating-linear-gradient(45deg, #eee, #eee 6px, #ddd 6px, #ddd 12px);
+}
+.dhaga-strip-name {
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+  word-break: break-word;
+}
+.dhaga-row-large .needle-badge {
+  width: 3rem;
+  min-height: 3rem;
+  font-size: 1.35rem;
+  border-radius: 12px;
+}
+.dhaga-row-large .dhaga-strip-bar { height: 3rem; border-radius: 10px; }
+.dhaga-row-large .dhaga-strip-name { font-size: 0.95rem; }
+
+.paint-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.paint-strip.compact .dhaga-strip-bar { height: 1.6rem; }
+.paint-strip.compact .needle-badge { width: 1.8rem; min-height: 1.8rem; font-size: 0.85rem; }
+
+.colour-opt-btn {
+  appearance: none;
+  border: 2px solid var(--line);
+  border-radius: 12px;
+  padding: 0.45rem;
+  background: #fff;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+.colour-opt-btn.selected {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(7, 94, 84, 0.18);
+}
+
+.picked-thread .picked-kicker {
+  margin: 0 0 0.45rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* —— Full-screen final canvas on cloth colour —— */
+body.final-mode .bg { opacity: 0; }
+body.final-mode #main-shell .hero,
+body.final-mode #main-shell #form-panel,
+body.final-mode #main-shell #step-panel,
+body.final-mode #main-shell #page-foot {
+  display: none;
+}
+.final-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.final-canvas-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  filter: saturate(1.08);
+}
+.final-canvas-inner {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+  padding:
+    max(1.25rem, env(safe-area-inset-top, 0px))
+    max(1rem, env(safe-area-inset-right, 0px))
+    max(2rem, env(safe-area-inset-bottom, 0px))
+    max(1rem, env(safe-area-inset-left, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.final-canvas-head h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.6rem;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+}
+.final-canvas-head p {
+  margin: 0.35rem 0 0;
+  color: rgba(255,255,255,0.92);
+  font-weight: 700;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+}
+.final-dhaga-strips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+.final-dhaga-strips .dhaga-row {
+  background: rgba(255,255,255,0.94);
+  border-radius: 14px;
+  padding: 0.65rem 0.7rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+.final-tikli {
+  background: rgba(255,255,255,0.92) !important;
+  color: #9a3412 !important;
+}
+.final-canvas-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+.final-canvas-actions .btn {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.final-canvas-actions .btn.ghost {
+  background: rgba(255,255,255,0.92);
+  border-color: transparent;
 }
